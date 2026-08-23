@@ -1,1 +1,738 @@
-{}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResponseEnvelope",
+  "description": "One `prism-execution.v1` response.",
+  "type": "object",
+  "properties": {
+    "protocol_version": {
+      "description": "Protocol version used by the runtime.",
+      "type": "string"
+    },
+    "request_id": {
+      "description": "Correlation identifier copied from a parsed request, or a safe fallback.",
+      "$ref": "#/$defs/RequestId"
+    }
+  },
+  "oneOf": [
+    {
+      "description": "Successful operation.",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "Typed operation result.",
+          "$ref": "#/$defs/ExecutionResult"
+        },
+        "status": {
+          "type": "string",
+          "const": "ok"
+        }
+      },
+      "required": [
+        "status",
+        "result"
+      ]
+    },
+    {
+      "description": "Request-level failure.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Typed safe error.",
+          "$ref": "#/$defs/ProtocolError"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "required": [
+    "protocol_version",
+    "request_id"
+  ],
+  "$defs": {
+    "AltTextCapabilities": {
+      "description": "Alternative-text support and limits.",
+      "type": "object",
+      "properties": {
+        "max_characters": {
+          "description": "Maximum Unicode scalar values; `None` means Prism has no known limit.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "supported": {
+          "description": "Whether the provider can preserve alt text.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "supported"
+      ]
+    },
+    "DeliveryError": {
+      "description": "Typed, redacted error for one target.",
+      "type": "object",
+      "properties": {
+        "class": {
+          "description": "Stable cross-provider class.",
+          "$ref": "#/$defs/DeliveryErrorClass"
+        },
+        "code": {
+          "description": "Stable adapter or Prism code.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Safe message that contains no credentials or raw upstream payload.",
+          "type": "string"
+        },
+        "retry_after_seconds": {
+          "description": "Suggested delay for a rate limit or transient failure.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "code",
+        "message"
+      ]
+    },
+    "DeliveryErrorClass": {
+      "description": "Stable provider failure class used across all adapters.",
+      "oneOf": [
+        {
+          "description": "Deterministic request or capability failure.",
+          "type": "string",
+          "const": "invalid_request"
+        },
+        {
+          "description": "Transient provider or transport failure.",
+          "type": "string",
+          "const": "retryable"
+        },
+        {
+          "description": "Provider rate limit with optional retry guidance.",
+          "type": "string",
+          "const": "rate_limited"
+        },
+        {
+          "description": "Missing, expired, or insufficient authorization.",
+          "type": "string",
+          "const": "auth_required"
+        },
+        {
+          "description": "Provider understood but rejected the request.",
+          "type": "string",
+          "const": "provider_rejected"
+        },
+        {
+          "description": "Non-retryable provider or adapter failure.",
+          "type": "string",
+          "const": "terminal"
+        }
+      ]
+    },
+    "DispatchPolicy": {
+      "description": "Behavior when one or more targets fail preflight validation.",
+      "oneOf": [
+        {
+          "description": "Perform no external action unless every target passes preflight.",
+          "type": "string",
+          "const": "require_all_valid"
+        },
+        {
+          "description": "Dispatch each valid target independently.",
+          "type": "string",
+          "const": "independent"
+        }
+      ]
+    },
+    "EventKind": {
+      "description": "Deterministic execution event kind.",
+      "oneOf": [
+        {
+          "description": "Variant and adapter were resolved.",
+          "type": "string",
+          "const": "target_resolved"
+        },
+        {
+          "description": "Provider capabilities were loaded.",
+          "type": "string",
+          "const": "capabilities_loaded"
+        },
+        {
+          "description": "Target passed preflight.",
+          "type": "string",
+          "const": "target_validated"
+        },
+        {
+          "description": "Target failed preflight.",
+          "type": "string",
+          "const": "target_rejected"
+        },
+        {
+          "description": "Policy prevented an otherwise valid dispatch.",
+          "type": "string",
+          "const": "dispatch_skipped"
+        },
+        {
+          "description": "Adapter dispatch is about to cross the external-action boundary.",
+          "type": "string",
+          "const": "dispatch_started"
+        },
+        {
+          "description": "Provider returned a safe receipt.",
+          "type": "string",
+          "const": "published"
+        },
+        {
+          "description": "Provider dispatch failed.",
+          "type": "string",
+          "const": "delivery_failed"
+        }
+      ]
+    },
+    "ExecutionEvent": {
+      "description": "Sequence-numbered domain event with no wall-clock dependency.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Optional stable failure or decision code.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "description": "Event kind.",
+          "$ref": "#/$defs/EventKind"
+        },
+        "provider_id": {
+          "description": "Provider associated with the event.",
+          "$ref": "#/$defs/ProviderId"
+        },
+        "sequence": {
+          "description": "One-based stable sequence within the report.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "target_id": {
+          "description": "Target associated with the event.",
+          "$ref": "#/$defs/TargetId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "kind",
+        "target_id",
+        "provider_id"
+      ]
+    },
+    "ExecutionMode": {
+      "description": "Requested execution operation.",
+      "oneOf": [
+        {
+          "description": "Preflight only; never performs an external action.",
+          "type": "string",
+          "const": "validate"
+        },
+        {
+          "description": "Preflight followed by explicit provider dispatch.",
+          "type": "string",
+          "const": "publish"
+        }
+      ]
+    },
+    "ExecutionReport": {
+      "description": "Complete deterministic result for a validation or publish operation.",
+      "type": "object",
+      "properties": {
+        "dispatch_policy": {
+          "description": "Partial-publication policy applied by the executor.",
+          "$ref": "#/$defs/DispatchPolicy"
+        },
+        "events": {
+          "description": "Deterministic event stream.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionEvent"
+          }
+        },
+        "mode": {
+          "description": "Operation that produced the report.",
+          "$ref": "#/$defs/ExecutionMode"
+        },
+        "outcomes": {
+          "description": "Independent results in request target order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TargetOutcome"
+          }
+        },
+        "request_id": {
+          "description": "Caller correlation identifier.",
+          "$ref": "#/$defs/RequestId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "mode",
+        "dispatch_policy",
+        "outcomes",
+        "events"
+      ]
+    },
+    "ExecutionResult": {
+      "description": "Successful operation result.",
+      "oneOf": [
+        {
+          "description": "Capability snapshot.",
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ProviderCapabilities"
+            },
+            "type": {
+              "type": "string",
+              "const": "capabilities"
+            }
+          },
+          "required": [
+            "type",
+            "data"
+          ]
+        },
+        {
+          "description": "Validation or publication report.",
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ExecutionReport"
+            },
+            "type": {
+              "type": "string",
+              "const": "execution"
+            }
+          },
+          "required": [
+            "type",
+            "data"
+          ]
+        }
+      ]
+    },
+    "Extensions": {
+      "description": "Deterministically ordered, namespaced extension values.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "MediaCapabilities": {
+      "description": "Media support and limits reported by a provider at runtime.",
+      "type": "object",
+      "properties": {
+        "alt_text": {
+          "description": "Alternative-text behavior.",
+          "$ref": "#/$defs/AltTextCapabilities"
+        },
+        "max_items": {
+          "description": "Maximum media items in one publication; `None` means no known limit.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "mixed_kinds": {
+          "description": "Whether one publication can mix media kinds.",
+          "type": "boolean"
+        },
+        "supported_kinds": {
+          "description": "Supported media kinds.",
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MediaKind"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "mixed_kinds",
+        "alt_text"
+      ]
+    },
+    "MediaKind": {
+      "description": "Provider-neutral media kind.",
+      "oneOf": [
+        {
+          "description": "Still image.",
+          "type": "string",
+          "const": "image"
+        },
+        {
+          "description": "Video asset.",
+          "type": "string",
+          "const": "video"
+        },
+        {
+          "description": "Audio asset.",
+          "type": "string",
+          "const": "audio"
+        },
+        {
+          "description": "Document or other downloadable file.",
+          "type": "string",
+          "const": "document"
+        }
+      ]
+    },
+    "ProtocolError": {
+      "description": "Safe request-level error. It never echoes the source payload.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-stable error code.",
+          "$ref": "#/$defs/ProtocolErrorCode"
+        },
+        "issues": {
+          "description": "Structured domain issues when available.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          }
+        },
+        "message": {
+          "description": "Redacted human-readable explanation.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ProtocolErrorCode": {
+      "description": "Stable request-level protocol error code.",
+      "oneOf": [
+        {
+          "description": "Input is not a valid JSON protocol envelope.",
+          "type": "string",
+          "const": "invalid_envelope"
+        },
+        {
+          "description": "The requested protocol version is unsupported.",
+          "type": "string",
+          "const": "unsupported_protocol"
+        },
+        {
+          "description": "The envelope is valid but domain structure is not.",
+          "type": "string",
+          "const": "invalid_request"
+        },
+        {
+          "description": "No adapter is registered for the requested provider.",
+          "type": "string",
+          "const": "provider_not_found"
+        },
+        {
+          "description": "Adapter returned a request-level capability failure.",
+          "type": "string",
+          "const": "capability_discovery_failed"
+        },
+        {
+          "description": "Unexpected internal failure that is safe to expose.",
+          "type": "string",
+          "const": "internal"
+        }
+      ]
+    },
+    "ProviderCapabilities": {
+      "description": "Runtime capability snapshot for one provider/channel context.",
+      "type": "object",
+      "properties": {
+        "extensions": {
+          "description": "Namespaced capabilities that are not yet canonical.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "formats": {
+          "description": "Supported publication formats.",
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PublicationFormat"
+          },
+          "uniqueItems": true
+        },
+        "media": {
+          "description": "Media support.",
+          "$ref": "#/$defs/MediaCapabilities"
+        },
+        "provider_id": {
+          "description": "Provider that produced the snapshot.",
+          "$ref": "#/$defs/ProviderId"
+        },
+        "revision": {
+          "description": "Optional provider-defined snapshot revision.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "text": {
+          "description": "Text support.",
+          "$ref": "#/$defs/TextCapabilities"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "provider_id",
+        "text",
+        "media"
+      ]
+    },
+    "ProviderId": {
+      "description": "Stable provider identity such as `instagram` or `meta.threads`.",
+      "type": "string"
+    },
+    "ProviderReceipt": {
+      "description": "Safe provider receipt. Raw upstream responses do not cross this boundary.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Namespaced, explicitly safe receipt metadata.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "external_id": {
+          "description": "Provider-native content identifier.",
+          "type": "string"
+        },
+        "external_url": {
+          "description": "Optional canonical public URL.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "external_id"
+      ]
+    },
+    "PublicationFormat": {
+      "description": "Shared publication surface. Provider-only surfaces use namespaced extensions\nuntil they prove portable.",
+      "oneOf": [
+        {
+          "description": "Standard feed or channel post.",
+          "type": "string",
+          "const": "post"
+        },
+        {
+          "description": "Ephemeral story-like surface.",
+          "type": "string",
+          "const": "story"
+        },
+        {
+          "description": "Short-form video surface.",
+          "type": "string",
+          "const": "short_video"
+        },
+        {
+          "description": "Native poll surface.",
+          "type": "string",
+          "const": "poll"
+        }
+      ]
+    },
+    "RequestId": {
+      "description": "Correlation identifier supplied by the caller.",
+      "type": "string"
+    },
+    "TargetId": {
+      "description": "Identifier unique within one publish request.",
+      "type": "string"
+    },
+    "TargetOutcome": {
+      "description": "Independent result for one target, kept in request order.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "Typed failure for a failed or skipped target.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeliveryError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provider_id": {
+          "description": "Provider identity.",
+          "$ref": "#/$defs/ProviderId"
+        },
+        "receipt": {
+          "description": "Safe provider receipt for a successful publish.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProviderReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_variant_id": {
+          "description": "Variant selected during deterministic resolution.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VariantId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "description": "Current terminal outcome for this execution.",
+          "$ref": "#/$defs/TargetStatus"
+        },
+        "target_id": {
+          "description": "Request-local target identifier.",
+          "$ref": "#/$defs/TargetId"
+        },
+        "validation_issues": {
+          "description": "Structured blocking issues and non-blocking warnings from preflight.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target_id",
+        "provider_id",
+        "status"
+      ]
+    },
+    "TargetStatus": {
+      "description": "Outcome state for one target.",
+      "oneOf": [
+        {
+          "description": "Target passed core and adapter preflight.",
+          "type": "string",
+          "const": "validated"
+        },
+        {
+          "description": "Provider returned a safe receipt after dispatch.",
+          "type": "string",
+          "const": "published"
+        },
+        {
+          "description": "Target was valid but policy prevented dispatch.",
+          "type": "string",
+          "const": "skipped"
+        },
+        {
+          "description": "Target failed preflight or dispatch.",
+          "type": "string",
+          "const": "failed"
+        }
+      ]
+    },
+    "TextCapabilities": {
+      "description": "Text support and limits reported by a provider at runtime.",
+      "type": "object",
+      "properties": {
+        "max_characters": {
+          "description": "Maximum Unicode scalar values; `None` means Prism has no known limit.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "supported": {
+          "description": "Whether text can be included at all.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "supported"
+      ]
+    },
+    "ValidationIssue": {
+      "description": "Stable validation code plus a safe human-readable explanation.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-stable code.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Safe explanation that does not reproduce content or secrets.",
+          "type": "string"
+        },
+        "path": {
+          "description": "JSON-pointer-like location in the request.",
+          "type": "string"
+        },
+        "severity": {
+          "description": "Whether the issue blocks dispatch.",
+          "$ref": "#/$defs/ValidationSeverity"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message",
+        "severity"
+      ]
+    },
+    "ValidationSeverity": {
+      "description": "Severity of a deterministic validation issue.",
+      "oneOf": [
+        {
+          "description": "Prevents the target or request from being dispatched.",
+          "type": "string",
+          "const": "error"
+        },
+        {
+          "description": "Preserves a non-blocking provider or content warning.",
+          "type": "string",
+          "const": "warning"
+        }
+      ]
+    },
+    "VariantId": {
+      "description": "Identifier unique within one publish request.",
+      "type": "string"
+    }
+  }
+}
