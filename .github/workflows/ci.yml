@@ -41,8 +41,18 @@ jobs:
       - name: Test workspace
         run: cargo test --workspace --all-features
 
-      - name: Check generated contracts
-        run: cargo run -p xtask -- check
+      - name: Generate contracts
+        run: cargo run -p xtask -- write
+
+      - name: Export generated contracts for bootstrap
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-contracts
+          path: contracts/*.schema.json
+          retention-days: 1
+
+      - name: Check generated contract drift
+        run: git diff --exit-code -- contracts/*.schema.json
 
       - name: Build documentation
         env:
