@@ -109,7 +109,11 @@ impl PublishRequest {
         target: &PublishTarget,
     ) -> Result<&ContentVariant, ValidationIssue> {
         for candidate in target.selection.candidates() {
-            if let Some(variant) = self.variants.iter().find(|variant| &variant.id == candidate) {
+            if let Some(variant) = self
+                .variants
+                .iter()
+                .find(|variant| &variant.id == candidate)
+            {
                 if variant.supports_provider(&target.provider_id) {
                     return Ok(variant);
                 }
@@ -204,7 +208,9 @@ impl PublishRequest {
             if let Some(audience) = &variant.audience {
                 if let Some(country) = &audience.country {
                     if country.len() != 2
-                        || !country.chars().all(|character| character.is_ascii_uppercase())
+                        || !country
+                            .chars()
+                            .all(|character| character.is_ascii_uppercase())
                     {
                         issues.push(ValidationIssue::error(
                             "audience.country.invalid",
@@ -343,12 +349,19 @@ mod tests {
         let request = PublishRequest {
             idempotency_key: IdempotencyKey::new("publication-1").expect("valid key"),
             dispatch_policy: DispatchPolicy::RequireAllValid,
-            variants: vec![variant("instagram", Some("meta.instagram")), variant("generic", None)],
+            variants: vec![
+                variant("instagram", Some("meta.instagram")),
+                variant("generic", None),
+            ],
             targets: vec![target.clone()],
         };
 
         assert_eq!(
-            request.resolve_variant(&target).expect("eligible variant").id.as_str(),
+            request
+                .resolve_variant(&target)
+                .expect("eligible variant")
+                .id
+                .as_str(),
             "generic"
         );
         assert!(request.structural_issues().is_empty());
@@ -377,9 +390,11 @@ mod tests {
             }],
         };
 
-        assert!(request
-            .structural_issues()
-            .iter()
-            .any(|issue| issue.code == "extension.secret_prohibited"));
+        assert!(
+            request
+                .structural_issues()
+                .iter()
+                .any(|issue| issue.code == "extension.secret_prohibited")
+        );
     }
 }

@@ -7,7 +7,9 @@ const REQUEST_SCHEMA: &str = "contracts/prism-execution.v1.request.schema.json";
 const RESPONSE_SCHEMA: &str = "contracts/prism-execution.v1.response.schema.json";
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let command = std::env::args().nth(1).unwrap_or_else(|| "check".to_owned());
+    let command = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "check".to_owned());
     let generated = [
         (REQUEST_SCHEMA, render_schema::<RequestEnvelope>()?),
         (RESPONSE_SCHEMA, render_schema::<ResponseEnvelope>()?),

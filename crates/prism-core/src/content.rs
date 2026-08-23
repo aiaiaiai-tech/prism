@@ -88,7 +88,9 @@ pub struct Provenance {
 }
 
 /// Provider-neutral media kind.
-#[derive(Clone, Copy, Debug, Eq, JsonSchema, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(
+    Clone, Copy, Debug, Eq, JsonSchema, Ord, PartialEq, PartialOrd, Serialize, Deserialize,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum MediaKind {
     /// Still image.
@@ -123,7 +125,9 @@ pub struct Media {
 
 /// Shared publication surface. Provider-only surfaces use namespaced extensions
 /// until they prove portable.
-#[derive(Clone, Copy, Debug, Eq, JsonSchema, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(
+    Clone, Copy, Debug, Eq, JsonSchema, Ord, PartialEq, PartialOrd, Serialize, Deserialize,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum PublicationFormat {
     /// Standard feed or channel post.
@@ -152,10 +156,7 @@ impl ContentBody {
     /// Returns whether the body has neither meaningful text nor media.
     #[must_use]
     pub fn is_empty(&self) -> bool {
-        self.text
-            .as_ref()
-            .is_none_or(|text| text.trim().is_empty())
-            && self.media.is_empty()
+        self.text.as_ref().is_none_or(|text| text.trim().is_empty()) && self.media.is_empty()
     }
 
     /// Counts Unicode scalar values rather than UTF-8 bytes.

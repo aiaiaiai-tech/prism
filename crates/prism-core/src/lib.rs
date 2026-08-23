@@ -25,7 +25,7 @@ pub use request::{
     DispatchPolicy, IdempotencyScope, PublishRequest, PublishTarget, VariantSelection,
 };
 pub use result::{
-    DeliveryError, DeliveryErrorClass, EventKind, ExecutionEvent, ExecutionMode,
-    ExecutionReport, ProviderReceipt, TargetOutcome, TargetStatus,
+    DeliveryError, DeliveryErrorClass, EventKind, ExecutionEvent, ExecutionMode, ExecutionReport,
+    ProviderReceipt, TargetOutcome, TargetStatus,
 };
 pub use validation::{ValidationIssue, ValidationSeverity};

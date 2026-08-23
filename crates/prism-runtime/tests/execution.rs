@@ -116,10 +116,12 @@ async fn unsupported_media_fails_before_external_action() {
 
     assert_eq!(report.outcomes[0].status, TargetStatus::Failed);
     assert_eq!(fake.publish_count().expect("fake state"), 0);
-    assert!(report.outcomes[0]
-        .validation_issues
-        .iter()
-        .any(|issue| issue.code == "capability.media.kind_unsupported"));
+    assert!(
+        report.outcomes[0]
+            .validation_issues
+            .iter()
+            .any(|issue| issue.code == "capability.media.kind_unsupported")
+    );
 }
 
 #[tokio::test]
@@ -130,8 +132,14 @@ async fn require_all_valid_prevents_every_external_action() {
             RequestId::new("request-2").expect("valid request ID"),
             request(
                 DispatchPolicy::RequireAllValid,
-                vec![variant("valid", "так", None), variant("invalid", "занадто довго", None)],
-                vec![target("target-valid", "valid"), target("target-invalid", "invalid")],
+                vec![
+                    variant("valid", "так", None),
+                    variant("invalid", "занадто довго", None),
+                ],
+                vec![
+                    target("target-valid", "valid"),
+                    target("target-invalid", "invalid"),
+                ],
             ),
         )
         .await
@@ -150,8 +158,14 @@ async fn independent_policy_isolates_targets_and_derives_idempotency() {
             RequestId::new("request-3").expect("valid request ID"),
             request(
                 DispatchPolicy::Independent,
-                vec![variant("valid", "так", None), variant("invalid", "занадто довго", None)],
-                vec![target("target-valid", "valid"), target("target-invalid", "invalid")],
+                vec![
+                    variant("valid", "так", None),
+                    variant("invalid", "занадто довго", None),
+                ],
+                vec![
+                    target("target-valid", "valid"),
+                    target("target-invalid", "invalid"),
+                ],
             ),
         )
         .await
@@ -181,9 +195,11 @@ async fn validate_mode_never_publishes_and_events_are_sequence_numbered() {
 
     assert_eq!(report.outcomes[0].status, TargetStatus::Validated);
     assert_eq!(fake.publish_count().expect("fake state"), 0);
-    assert!(report
-        .events
-        .iter()
-        .enumerate()
-        .all(|(index, event)| event.sequence as usize == index + 1));
+    assert!(
+        report
+            .events
+            .iter()
+            .enumerate()
+            .all(|(index, event)| event.sequence as usize == index + 1)
+    );
 }

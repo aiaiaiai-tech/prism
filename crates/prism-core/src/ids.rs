@@ -34,7 +34,10 @@ fn validate_reference(value: &str, kind: &'static str) -> Result<(), ReferenceEr
         ));
     }
     if value.chars().any(char::is_control) {
-        return Err(ReferenceError::new(kind, "must not contain control characters"));
+        return Err(ReferenceError::new(
+            kind,
+            "must not contain control characters",
+        ));
     }
     Ok(())
 }
@@ -88,14 +91,46 @@ macro_rules! opaque_reference {
     };
 }
 
-opaque_reference!(ChannelRef, "channel reference", "Opaque reference to a configured provider channel.");
-opaque_reference!(CredentialRef, "credential reference", "Opaque reference resolved by a provider adapter; never a raw secret.");
-opaque_reference!(IdempotencyKey, "idempotency key", "Caller-owned idempotency key for one logical publication.");
-opaque_reference!(MediaRef, "media reference", "Opaque reference to media resolved outside the core domain.");
-opaque_reference!(RequestId, "request ID", "Correlation identifier supplied by the caller.");
-opaque_reference!(TargetId, "target ID", "Identifier unique within one publish request.");
-opaque_reference!(VariantId, "variant ID", "Identifier unique within one publish request.");
-opaque_reference!(VoiceProfileRef, "voice profile reference", "Reference to a voice or style profile, independent from locale.");
+opaque_reference!(
+    ChannelRef,
+    "channel reference",
+    "Opaque reference to a configured provider channel."
+);
+opaque_reference!(
+    CredentialRef,
+    "credential reference",
+    "Opaque reference resolved by a provider adapter; never a raw secret."
+);
+opaque_reference!(
+    IdempotencyKey,
+    "idempotency key",
+    "Caller-owned idempotency key for one logical publication."
+);
+opaque_reference!(
+    MediaRef,
+    "media reference",
+    "Opaque reference to media resolved outside the core domain."
+);
+opaque_reference!(
+    RequestId,
+    "request ID",
+    "Correlation identifier supplied by the caller."
+);
+opaque_reference!(
+    TargetId,
+    "target ID",
+    "Identifier unique within one publish request."
+);
+opaque_reference!(
+    VariantId,
+    "variant ID",
+    "Identifier unique within one publish request."
+);
+opaque_reference!(
+    VoiceProfileRef,
+    "voice profile reference",
+    "Reference to a voice or style profile, independent from locale."
+);
 
 /// Stable provider identity such as `instagram` or `meta.threads`.
 #[derive(Clone, Debug, Eq, Hash, JsonSchema, Ord, PartialEq, PartialOrd, Serialize)]

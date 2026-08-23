@@ -48,10 +48,10 @@ async fn publish_example_is_a_golden_protocol_contract() {
         .expect("provider registers once");
     let service = ExecutionService::new(Executor::new(registry));
 
-    let request_source = fs::read_to_string(fixture("publish.request.json"))
-        .expect("request fixture can be read");
-    let expected_source = fs::read_to_string(fixture("publish.response.json"))
-        .expect("response fixture can be read");
+    let request_source =
+        fs::read_to_string(fixture("publish.request.json")).expect("request fixture can be read");
+    let expected_source =
+        fs::read_to_string(fixture("publish.response.json")).expect("response fixture can be read");
     let request: RequestEnvelope =
         serde_json::from_str(&request_source).expect("request fixture is valid");
     let expected: ResponseEnvelope =

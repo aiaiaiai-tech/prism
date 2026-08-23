@@ -155,9 +155,7 @@ impl ProviderCapabilities {
 mod tests {
     use std::collections::BTreeSet;
 
-    use crate::{
-        ContentBody, Extensions, LocaleTag, Provenance, ProvenanceKind, VariantId,
-    };
+    use crate::{ContentBody, Extensions, LocaleTag, Provenance, ProvenanceKind, VariantId};
 
     use super::*;
 
@@ -204,7 +202,14 @@ mod tests {
             extensions: Extensions::new(),
         };
 
-        assert!(capabilities.validate_variant(&text_variant("три")).is_empty());
-        assert_eq!(capabilities.validate_variant(&text_variant("чотири")).len(), 1);
+        assert!(
+            capabilities
+                .validate_variant(&text_variant("три"))
+                .is_empty()
+        );
+        assert_eq!(
+            capabilities.validate_variant(&text_variant("чотири")).len(),
+            1
+        );
     }
 }

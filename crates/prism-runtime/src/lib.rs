@@ -86,7 +86,8 @@ impl Executor {
         request_id: RequestId,
         request: prism_core::PublishRequest,
     ) -> Result<ExecutionReport, ExecutionFailure> {
-        self.execute(request_id, request, ExecutionMode::Validate).await
+        self.execute(request_id, request, ExecutionMode::Validate)
+            .await
     }
 
     /// Runs preflight for every target, then dispatches according to policy.
@@ -95,7 +96,8 @@ impl Executor {
         request_id: RequestId,
         request: prism_core::PublishRequest,
     ) -> Result<ExecutionReport, ExecutionFailure> {
-        self.execute(request_id, request, ExecutionMode::Publish).await
+        self.execute(request_id, request, ExecutionMode::Publish)
+            .await
     }
 
     async fn execute(
@@ -122,8 +124,8 @@ impl Executor {
 
         if mode == ExecutionMode::Publish {
             let any_rejected = plans.iter().any(|plan| !plan.ready);
-            let block_all = request.dispatch_policy == DispatchPolicy::RequireAllValid
-                && any_rejected;
+            let block_all =
+                request.dispatch_policy == DispatchPolicy::RequireAllValid && any_rejected;
 
             for plan in &mut plans {
                 if !plan.ready {
@@ -145,12 +147,7 @@ impl Executor {
                     continue;
                 }
 
-                push_event(
-                    &mut events,
-                    EventKind::DispatchStarted,
-                    &plan.outcome,
-                    None,
-                );
+                push_event(&mut events, EventKind::DispatchStarted, &plan.outcome, None);
                 let Some(adapter) = &plan.adapter else {
                     mark_internal_plan_failure(plan, &mut events);
                     continue;
@@ -283,12 +280,7 @@ impl Executor {
                 let code = error.code.clone();
                 outcome.status = TargetStatus::Failed;
                 outcome.error = Some(error);
-                push_event(
-                    events,
-                    EventKind::TargetRejected,
-                    &outcome,
-                    Some(&code),
-                );
+                push_event(events, EventKind::TargetRejected, &outcome, Some(&code));
                 return TargetPlan {
                     adapter: Some(adapter),
                     request: None,
@@ -314,12 +306,7 @@ impl Executor {
                     let code = error.code.clone();
                     outcome.status = TargetStatus::Failed;
                     outcome.error = Some(error);
-                    push_event(
-                        events,
-                        EventKind::TargetRejected,
-                        &outcome,
-                        Some(&code),
-                    );
+                    push_event(events, EventKind::TargetRejected, &outcome, Some(&code));
                     return TargetPlan {
                         adapter: Some(adapter),
                         request: Some(provider_request),

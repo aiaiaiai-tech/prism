@@ -9,9 +9,7 @@ use prism_core::{
     AltTextCapabilities, Extensions, MediaCapabilities, MediaKind, ProviderCapabilities,
     ProviderId, PublicationFormat, TextCapabilities,
 };
-use prism_protocol::{
-    ProtocolError, ProtocolErrorCode, RequestEnvelope, ResponseEnvelope,
-};
+use prism_protocol::{ProtocolError, ProtocolErrorCode, RequestEnvelope, ResponseEnvelope};
 use prism_provider::ProviderRegistry;
 use prism_runtime::{ExecutionService, Executor};
 use tokio::io::{self, AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};

@@ -94,10 +94,7 @@ impl ProviderRegistry {
     }
 
     /// Registers an adapter, rejecting accidental replacement.
-    pub fn register(
-        &mut self,
-        provider: Arc<dyn ProviderAdapter>,
-    ) -> Result<(), RegistryError> {
+    pub fn register(&mut self, provider: Arc<dyn ProviderAdapter>) -> Result<(), RegistryError> {
         let provider_id = provider.provider_id().clone();
         if self.providers.contains_key(&provider_id) {
             return Err(RegistryError::Duplicate(provider_id));
