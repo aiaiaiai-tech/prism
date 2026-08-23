@@ -1,0 +1,18 @@
+[package]
+name = "prism-protocol"
+description = "Language-neutral Prism execution protocol envelopes"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+prism-core = { path = "../prism-core" }
+schemars.workspace = true
+serde.workspace = true
