@@ -256,10 +256,12 @@ impl NamespacedKey {
     #[must_use]
     pub fn looks_secret_bearing(&self) -> bool {
         self.0.split('.').any(|segment| {
-            matches!(
-                segment,
-                "authorization" | "credential" | "password" | "secret" | "token"
-            )
+            segment.split(['-', '_']).any(|component| {
+                matches!(
+                    component,
+                    "authorization" | "credential" | "password" | "secret" | "token"
+                )
+            })
         })
     }
 }
