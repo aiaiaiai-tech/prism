@@ -84,12 +84,10 @@ fn copyright_failures(root: &Path) -> Result<Vec<String>, io::Error> {
                 &relative.to_string(),
                 &mut failures,
             ),
-            Some("md") => {
-                if !content.trim_end().ends_with(MARKDOWN_NOTICE) {
-                    failures.push(format!(
-                        "{relative}: missing canonical copyright footer `{MARKDOWN_NOTICE}`"
-                    ));
-                }
+            Some("md") if !content.trim_end().ends_with(MARKDOWN_NOTICE) => {
+                failures.push(format!(
+                    "{relative}: missing canonical copyright footer `{MARKDOWN_NOTICE}`"
+                ));
             }
             _ => {}
         }
