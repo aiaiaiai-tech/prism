@@ -1,0 +1,561 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RequestEnvelope",
+  "description": "One `prism-execution.v1` request.",
+  "type": "object",
+  "properties": {
+    "protocol_version": {
+      "description": "Must equal [`PROTOCOL_VERSION`].",
+      "type": "string"
+    },
+    "request_id": {
+      "description": "Caller correlation identifier.",
+      "$ref": "#/$defs/RequestId"
+    }
+  },
+  "oneOf": [
+    {
+      "description": "Discover current provider capabilities.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "capabilities"
+        },
+        "payload": {
+          "$ref": "#/$defs/CapabilitiesRequest"
+        }
+      },
+      "required": [
+        "operation",
+        "payload"
+      ]
+    },
+    {
+      "description": "Run all preflight stages with no publish action.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "validate"
+        },
+        "payload": {
+          "$ref": "#/$defs/PublishRequest"
+        }
+      },
+      "required": [
+        "operation",
+        "payload"
+      ]
+    },
+    {
+      "description": "Run preflight and explicitly dispatch according to policy.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "publish"
+        },
+        "payload": {
+          "$ref": "#/$defs/PublishRequest"
+        }
+      },
+      "required": [
+        "operation",
+        "payload"
+      ]
+    }
+  ],
+  "required": [
+    "protocol_version",
+    "request_id"
+  ],
+  "$defs": {
+    "Audience": {
+      "description": "Optional audience metadata, independent from locale and voice.",
+      "type": "object",
+      "properties": {
+        "city": {
+          "description": "Human-readable city.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "description": "ISO 3166-1 alpha-2 country code when geographic targeting matters.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "region": {
+          "description": "Human-readable region or subdivision.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "segment": {
+          "description": "Product-owned audience segment reference.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "CapabilitiesRequest": {
+      "description": "Capability discovery input for one provider/channel context.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "Opaque channel reference.",
+          "$ref": "#/$defs/ChannelRef"
+        },
+        "credential": {
+          "description": "Optional credential reference resolved by the adapter.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CredentialRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "options": {
+          "description": "Provider-scoped capability context.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "provider_id": {
+          "description": "Provider adapter identifier.",
+          "$ref": "#/$defs/ProviderId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "provider_id",
+        "channel"
+      ]
+    },
+    "ChannelRef": {
+      "description": "Opaque reference to a configured provider channel.",
+      "type": "string"
+    },
+    "ContentBody": {
+      "description": "Text and media delivered as one variant.",
+      "type": "object",
+      "properties": {
+        "media": {
+          "description": "Ordered media items.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Media"
+          }
+        },
+        "text": {
+          "description": "Explicit text. `None` differs from an invalid empty string.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ContentVariant": {
+      "description": "Explicit delivery candidate across independent localization dimensions.",
+      "type": "object",
+      "properties": {
+        "audience": {
+          "description": "Optional audience metadata, independent from locale.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Audience"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "description": "Explicit content.",
+          "$ref": "#/$defs/ContentBody"
+        },
+        "extensions": {
+          "description": "Namespaced content metadata.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "format": {
+          "description": "Publication surface.",
+          "$ref": "#/$defs/PublicationFormat"
+        },
+        "id": {
+          "description": "Request-local identifier.",
+          "$ref": "#/$defs/VariantId"
+        },
+        "locale": {
+          "description": "BCP-47 content locale.",
+          "$ref": "#/$defs/LocaleTag"
+        },
+        "provenance": {
+          "description": "Variant origin.",
+          "$ref": "#/$defs/Provenance"
+        },
+        "provider_target": {
+          "description": "Optional provider restriction for a provider-native variant.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProviderId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "voice_profile": {
+          "description": "Optional voice/style profile, independent from locale.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VoiceProfileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "locale",
+        "format",
+        "body",
+        "provenance"
+      ]
+    },
+    "CredentialRef": {
+      "description": "Opaque reference resolved by a provider adapter; never a raw secret.",
+      "type": "string"
+    },
+    "DispatchPolicy": {
+      "description": "Behavior when one or more targets fail preflight validation.",
+      "oneOf": [
+        {
+          "description": "Perform no external action unless every target passes preflight.",
+          "type": "string",
+          "const": "require_all_valid"
+        },
+        {
+          "description": "Dispatch each valid target independently.",
+          "type": "string",
+          "const": "independent"
+        }
+      ]
+    },
+    "Extensions": {
+      "description": "Deterministically ordered, namespaced extension values.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "IdempotencyKey": {
+      "description": "Caller-owned idempotency key for one logical publication.",
+      "type": "string"
+    },
+    "LocaleTag": {
+      "description": "A BCP-47 locale tag. Voice/style profiles are intentionally separate.",
+      "type": "string"
+    },
+    "Media": {
+      "description": "Media reference and metadata; the bytes are resolved outside `prism-core`.",
+      "type": "object",
+      "properties": {
+        "alt_text": {
+          "description": "Accessibility text that must not be silently discarded.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "extensions": {
+          "description": "Namespaced media metadata.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "kind": {
+          "description": "Semantic media kind.",
+          "$ref": "#/$defs/MediaKind"
+        },
+        "mime_type": {
+          "description": "Optional trusted MIME type hint.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ref": {
+          "description": "Opaque media reference.",
+          "$ref": "#/$defs/MediaRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "kind"
+      ]
+    },
+    "MediaKind": {
+      "description": "Provider-neutral media kind.",
+      "oneOf": [
+        {
+          "description": "Still image.",
+          "type": "string",
+          "const": "image"
+        },
+        {
+          "description": "Video asset.",
+          "type": "string",
+          "const": "video"
+        },
+        {
+          "description": "Audio asset.",
+          "type": "string",
+          "const": "audio"
+        },
+        {
+          "description": "Document or other downloadable file.",
+          "type": "string",
+          "const": "document"
+        }
+      ]
+    },
+    "MediaRef": {
+      "description": "Opaque reference to media resolved outside the core domain.",
+      "type": "string"
+    },
+    "Provenance": {
+      "description": "Provenance metadata carried with a variant.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "How the variant was produced.",
+          "$ref": "#/$defs/ProvenanceKind"
+        },
+        "producer": {
+          "description": "Optional producer reference, such as a user or model profile.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_refs": {
+          "description": "Opaque references to source facts or content.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "ProvenanceKind": {
+      "description": "Origin of an explicit content variant.",
+      "oneOf": [
+        {
+          "description": "Written or approved directly by a person.",
+          "type": "string",
+          "const": "human"
+        },
+        {
+          "description": "Imported without semantic transformation.",
+          "type": "string",
+          "const": "import"
+        },
+        {
+          "description": "Produced by a deterministic transformation.",
+          "type": "string",
+          "const": "deterministic_transform"
+        },
+        {
+          "description": "Produced by an AI system and made explicit before delivery.",
+          "type": "string",
+          "const": "ai"
+        }
+      ]
+    },
+    "ProviderId": {
+      "description": "Stable provider identity such as `instagram` or `meta.threads`.",
+      "type": "string"
+    },
+    "PublicationFormat": {
+      "description": "Shared publication surface. Provider-only surfaces use namespaced extensions\nuntil they prove portable.",
+      "oneOf": [
+        {
+          "description": "Standard feed or channel post.",
+          "type": "string",
+          "const": "post"
+        },
+        {
+          "description": "Ephemeral story-like surface.",
+          "type": "string",
+          "const": "story"
+        },
+        {
+          "description": "Short-form video surface.",
+          "type": "string",
+          "const": "short_video"
+        },
+        {
+          "description": "Native poll surface.",
+          "type": "string",
+          "const": "poll"
+        }
+      ]
+    },
+    "PublishRequest": {
+      "description": "Immutable input for validation or publication.",
+      "type": "object",
+      "properties": {
+        "dispatch_policy": {
+          "description": "Explicit partial-publication behavior.",
+          "$ref": "#/$defs/DispatchPolicy",
+          "default": "require_all_valid"
+        },
+        "idempotency_key": {
+          "description": "Caller-owned key for one logical multi-target publication.",
+          "$ref": "#/$defs/IdempotencyKey"
+        },
+        "targets": {
+          "description": "Ordered provider targets. Outcome order follows this order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PublishTarget"
+          }
+        },
+        "variants": {
+          "description": "Explicit localized variants.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ContentVariant"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "idempotency_key",
+        "variants",
+        "targets"
+      ]
+    },
+    "PublishTarget": {
+      "description": "One configured provider destination and its explicit variant selection.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "Opaque configured channel reference.",
+          "$ref": "#/$defs/ChannelRef"
+        },
+        "credential": {
+          "description": "Optional credential reference resolved inside the adapter boundary.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CredentialRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "description": "Request-local target identifier.",
+          "$ref": "#/$defs/TargetId"
+        },
+        "options": {
+          "description": "Provider-scoped options; raw credentials are prohibited.",
+          "$ref": "#/$defs/Extensions"
+        },
+        "provider_id": {
+          "description": "Provider adapter identifier.",
+          "$ref": "#/$defs/ProviderId"
+        },
+        "selection": {
+          "description": "Deterministic content variant selection.",
+          "$ref": "#/$defs/VariantSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "provider_id",
+        "channel",
+        "selection"
+      ]
+    },
+    "RequestId": {
+      "description": "Correlation identifier supplied by the caller.",
+      "type": "string"
+    },
+    "TargetId": {
+      "description": "Identifier unique within one publish request.",
+      "type": "string"
+    },
+    "VariantId": {
+      "description": "Identifier unique within one publish request.",
+      "type": "string"
+    },
+    "VariantSelection": {
+      "description": "Explicit deterministic selection of a variant for one target.",
+      "oneOf": [
+        {
+          "description": "Select exactly one variant.",
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "exact"
+            },
+            "variant_id": {
+              "description": "Required variant identifier.",
+              "$ref": "#/$defs/VariantId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "variant_id"
+          ]
+        },
+        {
+          "description": "Select the first existing, provider-compatible variant in order.",
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "ordered"
+            },
+            "variant_ids": {
+              "description": "Candidate identifiers from highest to lowest priority.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/VariantId"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "variant_ids"
+          ]
+        }
+      ]
+    },
+    "VoiceProfileRef": {
+      "description": "Reference to a voice or style profile, independent from locale.",
+      "type": "string"
+    }
+  }
+}

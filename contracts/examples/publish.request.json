@@ -1,0 +1,45 @@
+{
+  "protocol_version": "prism-execution.v1",
+  "request_id": "example-request-1",
+  "operation": "publish",
+  "payload": {
+    "idempotency_key": "example-publication",
+    "dispatch_policy": "independent",
+    "variants": [
+      {
+        "id": "uk-personal",
+        "locale": "uk-UA",
+        "voice_profile": "0x0sky.instagram.uk_SP",
+        "audience": {
+          "country": "UA"
+        },
+        "format": "post",
+        "body": {
+          "text": "привіт із Prism",
+          "media": [
+            {
+              "ref": "media-cover-1",
+              "kind": "image",
+              "mime_type": "image/webp",
+              "alt_text": "Фіолетове світло Prism"
+            }
+          ]
+        },
+        "provenance": {
+          "kind": "human"
+        }
+      }
+    ],
+    "targets": [
+      {
+        "id": "threads-uk",
+        "provider_id": "test.fake",
+        "channel": "local-demo",
+        "selection": {
+          "mode": "exact",
+          "variant_id": "uk-personal"
+        }
+      }
+    ]
+  }
+}

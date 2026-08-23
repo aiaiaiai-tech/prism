@@ -1,0 +1,56 @@
+{
+  "protocol_version": "prism-execution.v1",
+  "request_id": "example-request-1",
+  "status": "ok",
+  "result": {
+    "type": "execution",
+    "data": {
+      "request_id": "example-request-1",
+      "mode": "publish",
+      "dispatch_policy": "independent",
+      "outcomes": [
+        {
+          "target_id": "threads-uk",
+          "provider_id": "test.fake",
+          "selected_variant_id": "uk-personal",
+          "status": "published",
+          "receipt": {
+            "external_id": "fake:test.fake:example-publication:threads-uk"
+          }
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "kind": "target_resolved",
+          "target_id": "threads-uk",
+          "provider_id": "test.fake"
+        },
+        {
+          "sequence": 2,
+          "kind": "capabilities_loaded",
+          "target_id": "threads-uk",
+          "provider_id": "test.fake"
+        },
+        {
+          "sequence": 3,
+          "kind": "target_validated",
+          "target_id": "threads-uk",
+          "provider_id": "test.fake"
+        },
+        {
+          "sequence": 4,
+          "kind": "dispatch_started",
+          "target_id": "threads-uk",
+          "provider_id": "test.fake"
+        },
+        {
+          "sequence": 5,
+          "kind": "published",
+          "target_id": "threads-uk",
+          "provider_id": "test.fake"
+        }
+      ]
+    }
+  }
+}
