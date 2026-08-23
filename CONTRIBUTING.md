@@ -16,6 +16,12 @@ Run `cargo run -p xtask -- write` only when a deliberate protocol change should
 update committed JSON Schemas. Review the resulting diff and add a migration
 note for every breaking pre-1.0 contract change.
 
+The same `xtask check` command validates repository copyright notices. New
+authored Rust, TOML, and YAML files must use the canonical aiaiaiai signature
+and the repository-approved SPDX identifier. Generated schemas, JSON fixtures,
+lockfiles, and third-party material follow the exceptions in
+[`docs/licensing.md`](docs/licensing.md).
+
 ## Pull requests
 
 - branch from `master` using `feature/` or `fix/`;
@@ -29,3 +35,5 @@ note for every breaking pre-1.0 contract change.
 Provider adapters must keep HTTP, OAuth, and provider-native error semantics
 inside the adapter. Core types may grow only when the concept is genuinely
 provider-neutral.
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->

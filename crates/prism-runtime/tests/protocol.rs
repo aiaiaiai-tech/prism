@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 use std::{collections::BTreeSet, fs, path::PathBuf, sync::Arc};
 
 use prism_core::{

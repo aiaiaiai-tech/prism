@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 //! Versioned language-neutral execution envelopes.
 
 use prism_core::{

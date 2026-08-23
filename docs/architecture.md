@@ -107,3 +107,8 @@ transport is JSON or NDJSON over a local process:
 
 The transport may later become a daemon, Unix socket, or internal HTTP service
 without changing execution semantics.
+
+For the exact boundary between implemented and planned behavior, see
+[`status.md`](status.md).
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->

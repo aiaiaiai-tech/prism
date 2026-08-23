@@ -37,3 +37,9 @@ Protocol and binary versions are independent. Within pre-1.0 development:
   drift in CI.
 
 See `contracts/examples/` for canonical envelopes.
+
+The current implementation supports only the local JSON/NDJSON process
+transport. Remote transports, daemon lifecycle, retries, and durable
+idempotency are TODO and are not implied by the versioned envelope.
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->

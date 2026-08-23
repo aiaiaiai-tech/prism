@@ -54,6 +54,17 @@ The canonical boundaries are documented in
 [`docs/architecture.md`](docs/architecture.md). Contract examples and generated
 schemas live in [`contracts/`](contracts/).
 
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [`implementation status`](docs/status.md) | Exact current behavior, explicit non-features, and TODO exit criteria |
+| [`architecture`](docs/architecture.md) | Ownership, dependency, determinism, and provider boundaries |
+| [`protocol`](docs/protocol.md) | `prism-execution.v1` envelope and transport contract |
+| [`ecosystem`](docs/ecosystem.md) | Boundaries between Prism, hub, clients, AI, HQBase, and infrastructure |
+| [`roadmap`](docs/roadmap.md) | Evidence-driven implementation order |
+| [`copyright and licensing`](docs/licensing.md) | aiaiaiai signature, Apache-2.0 policy, exclusions, and automation |
+
 ## Ecosystem boundary
 
 `prism-hub`, `prism-web`, `prism-telegram`, `prism-cli`, and `prism-ai` are
@@ -63,7 +74,13 @@ versioned contracts.
 
 ## Status
 
-Pre-1.0 foundation. Wire and crate APIs follow semantic versioning; a protocol
-version is never inferred from a binary version.
+Pre-1.0 executable foundation. The current repository has a fake provider but
+no live provider adapter, control plane, client, database, or deployment. See
+the [implementation status](docs/status.md) for the precise current/TODO split.
+
+Wire and crate APIs follow semantic versioning; a protocol version is never
+inferred from a binary version.
 
 Licensed under Apache-2.0.
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->

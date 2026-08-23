@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 //! Scriptable fake provider and reusable adapter conformance probes.
 
 use std::{

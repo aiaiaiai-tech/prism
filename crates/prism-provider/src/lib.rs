@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 //! Object-safe provider adapter contract and deterministic provider registry.
 
 use std::{collections::BTreeMap, sync::Arc};

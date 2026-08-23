@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 use std::collections::BTreeMap;
 
 use schemars::JsonSchema;

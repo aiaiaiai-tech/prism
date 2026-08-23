@@ -1,3 +1,6 @@
+# © 2026 aiaiaiai · aiaiaiai.org
+# SPDX-License-Identifier: Apache-2.0
+
 [package]
 name = "prism-runtime"
 description = "Stateless deterministic execution boundary for Prism"

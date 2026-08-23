@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 //! Stateless two-phase Prism executor and protocol service.
 
 use std::sync::Arc;

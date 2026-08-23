@@ -14,4 +14,8 @@ semantic versioning.
 - Object-safe asynchronous provider contract and scriptable test provider.
 - Versioned `prism-execution.v1` JSON/NDJSON process protocol.
 - Generated JSON Schemas, golden fixtures, and contract drift checks.
-- Architecture, ecosystem, security, and contribution documentation.
+- Canonical aiaiaiai copyright notices and automated policy validation.
+- Architecture, ecosystem, current/TODO status, licensing, security, and
+  contribution documentation.
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->

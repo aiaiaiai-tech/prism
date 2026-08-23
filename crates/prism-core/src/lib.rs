@@ -1,3 +1,6 @@
+// © 2026 aiaiaiai · aiaiaiai.org
+// SPDX-License-Identifier: Apache-2.0
+
 //! Provider-neutral types and deterministic rules for Prism.
 //!
 //! This crate deliberately has no network, storage, process, client, AI, or

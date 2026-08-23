@@ -17,3 +17,5 @@ a public issue before the impact and remediation path have been assessed.
 - Provider adapters own secret resolution and must redact upstream responses.
 - Publishing is an explicit external-action boundary with an idempotency key.
 - Required CI never performs live provider calls.
+
+<!-- © 2026 aiaiaiai · aiaiaiai.org -->
