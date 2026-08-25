@@ -50,8 +50,31 @@ never returned or logged.
 ## Verification policy
 
 Required CI uses injected transports and reduced error fixtures. It performs no
-live Threads call. A future controlled-account workflow must remain explicit and
-manual because publishing is an irreversible external action.
+live Threads call. `.github/workflows/threads-live.yml` is a separate manual
+workflow because publishing is an irreversible external action. It runs the
+same adapter through the complete Prism executor and emits only the redacted
+execution report.
+
+### Controlled live proof
+
+The repository must have a protected `threads-live` GitHub Environment with:
+
+- environment variable `THREADS_USER_ID` containing the controlled Threads
+  user ID;
+- environment secret `THREADS_ACCESS_TOKEN` containing a short-lived user
+  token with `threads_basic` and `threads_content_publish`;
+- a required reviewer when the repository plan supports environment reviewers.
+
+From the Actions tab, select **Threads Live Validation**, choose **Run
+workflow**, provide the public test text, and type the exact confirmation
+`PUBLISH_THREADS_TEST`. The workflow cannot run from pull requests, pushes, or
+schedules. A successful report must contain one `published` target, the public
+post ID, and the safe `meta.threads.container_id`; it must not contain the token
+or a raw Meta response.
+
+After the proof, record the workflow URL and public post URL in the pull request.
+Remove the short-lived secret from the environment when no further validation
+is planned. Token acquisition, refresh, and storage remain outside Prism core.
 
 ## Provider references
 

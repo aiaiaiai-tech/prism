@@ -543,6 +543,7 @@ dependencies = [
  "async-trait",
  "prism-core",
  "prism-provider",
+ "prism-runtime",
  "reqwest",
  "serde",
  "serde_json",

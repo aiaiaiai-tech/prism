@@ -1,0 +1,52 @@
+# © 2026 aiaiaiai · aiaiaiai.org
+# SPDX-License-Identifier: Apache-2.0
+
+name: Threads Live Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type PUBLISH_THREADS_TEST to allow one public test post
+        required: true
+        type: string
+      text:
+        description: Public text to publish to the controlled Threads account
+        required: true
+        default: "Prism live validation · text publishing proof"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: threads-live-validation
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish controlled text proof
+    if: ${{ inputs.confirmation == 'PUBLISH_THREADS_TEST' }}
+    environment: threads-live
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Publish one controlled Threads text post
+        env:
+          PRISM_LIVE_CONFIRMATION: ${{ inputs.confirmation }}
+          PRISM_THREADS_TEXT: ${{ inputs.text }}
+          PRISM_THREADS_USER_ID: ${{ vars.THREADS_USER_ID }}
+          PRISM_THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: cargo run --locked -p prism-provider-threads --example live_text
