@@ -8,7 +8,7 @@ repository-specific Apache-2.0 license.
 - public copyright owner: `aiaiaiai`;
 - canonical origin: `aiaiaiai.org`;
 - canonical signature: `© 2026 aiaiaiai · aiaiaiai.org`;
-- GitHub organization `aiaiaiai-tech` is a repository location, not the
+- GitHub organization `aiaiaiai-org` is a repository location, not the
   copyright owner;
 - no registered legal entity is claimed by this repository.
 

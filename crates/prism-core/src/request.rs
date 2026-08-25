@@ -98,10 +98,17 @@ pub struct IdempotencyScope {
 }
 
 impl IdempotencyScope {
-    /// Returns a stable string. Adapters may hash or map it to provider limits.
+    /// Returns collision-free, versioned material. Adapters may hash or map it
+    /// to provider limits but must preserve the complete logical scope.
     #[must_use]
     pub fn stable_string(&self) -> String {
-        format!("{}:{}", self.root, self.target_id)
+        format!(
+            "prism-idempotency.v1:{}:{}:{}:{}",
+            self.root.as_str().len(),
+            self.root,
+            self.target_id.as_str().len(),
+            self.target_id
+        )
     }
 }
 
@@ -399,5 +406,20 @@ mod tests {
                 .iter()
                 .any(|issue| issue.code == "extension.secret_prohibited")
         );
+    }
+
+    #[test]
+    fn idempotency_material_cannot_collide_at_component_boundaries() {
+        let first = IdempotencyScope {
+            root: IdempotencyKey::new("a:b").expect("valid key"),
+            target_id: TargetId::new("c").expect("valid target ID"),
+        };
+        let second = IdempotencyScope {
+            root: IdempotencyKey::new("a").expect("valid key"),
+            target_id: TargetId::new("b:c").expect("valid target ID"),
+        };
+
+        assert_ne!(first.stable_string(), second.stable_string());
+        assert_eq!(first.stable_string(), "prism-idempotency.v1:3:a:b:1:c");
     }
 }

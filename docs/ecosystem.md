@@ -57,7 +57,8 @@ receipts, metrics, and reporting. Both use identical Prism semantics.
 
 No profile may require aiaiaiai infrastructure for correctness.
 
-Only the `prism` execution foundation exists in this repository today. The hub,
+Only the `prism` execution foundation and first Threads provider proof exist in
+this repository today. The hub,
 clients, AI component, peer integrations, and deployment profiles in this
 document are architectural boundaries and TODO targets, not shipped services.
 See [`status.md`](status.md) for implementation state and exit criteria.

@@ -7,15 +7,16 @@ failure behavior, tests, and public contract are clear.
 
 ```bash
 cargo fmt --all -- --check
-cargo clippy --workspace --all-targets --all-features -- -D warnings
-cargo test --workspace --all-features
-cargo run -p xtask -- check
+cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+cargo test --locked --workspace --all-features
+cargo run --locked -p xtask -- check
 ```
 
 Run `cargo run -p xtask -- write` only when a deliberate protocol change should
 update committed JSON Schemas. Review the resulting diff and add a migration
 note for every breaking pre-1.0 contract change.
 
+Full CI also checks all targets and features with the declared Rust 1.85 MSRV.
 The same `xtask check` command validates repository copyright notices. New
 authored Rust, TOML, and YAML files must use the canonical aiaiaiai signature
 and the repository-approved SPDX identifier. Generated schemas, JSON fixtures,

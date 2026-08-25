@@ -39,15 +39,35 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Lint all targets and features
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
 
       - name: Test workspace
-        run: cargo test --workspace --all-features
+        run: cargo test --locked --workspace --all-features
 
       - name: Check generated contracts
-        run: cargo run -p xtask -- check
+        run: cargo run --locked -p xtask -- check
 
       - name: Build documentation
         env:
           RUSTDOCFLAGS: -D warnings
-        run: cargo doc --workspace --all-features --no-deps
+        run: cargo doc --locked --workspace --all-features --no-deps
+
+  msrv:
+    name: MSRV 1.85
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install minimum supported Rust
+        uses: dtolnay/rust-toolchain@1.85.0
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check all targets and features at MSRV
+        run: cargo check --locked --workspace --all-targets --all-features

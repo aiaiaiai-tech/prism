@@ -19,6 +19,7 @@ The design optimizes for four properties:
 flowchart TD
     Protocol["prism-protocol"] --> Core["prism-core"]
     Provider["prism-provider"] --> Core
+    Threads["prism-provider-threads"] --> Provider
     Runtime["prism-runtime"] --> Protocol
     Runtime --> Provider
     Testkit["prism-testkit"] --> Provider
@@ -90,6 +91,15 @@ An adapter owns:
 - provider-native validation and error mapping;
 - upstream idempotency support and safe receipt extraction;
 - redaction of upstream responses.
+
+The first implementation is `prism-provider-threads`. It resolves opaque
+channel and credential references through an injected boundary, keeps the token
+out of provider-neutral values and debug output, and uses an injected transport
+so required CI can prove behavior without live calls.
+
+An adapter must distinguish a failure that is safe to retry from an ambiguous
+external-action outcome. `outcome_unknown` means the action may already have
+succeeded; the caller must reconcile provider state before another attempt.
 
 Core owns only provider-neutral capabilities and stable error classes. A new
 provider feature first uses a namespaced extension. It becomes canonical only

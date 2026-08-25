@@ -3,7 +3,7 @@
 The roadmap is evidence-driven. Repository names describe ownership, but a new
 repository is created only when its public boundary is executable.
 
-## 0 — execution foundation (`current`)
+## 0 — execution foundation (`complete`)
 
 One vertical slice in `prism`:
 
@@ -18,13 +18,14 @@ One vertical slice in `prism`:
 This intentionally replaces three mostly structural bootstrap PRs. Empty crates
 would freeze names without proving their boundaries.
 
-## 1 — provider proof (`planned`)
+## 1 — provider proof (`current`)
 
-Implement the first real adapters behind the proven contract. Threads and
-Instagram may share private Meta transport/auth helpers while keeping their
-product semantics separate. X remains an independent adapter. Required CI uses
-recorded, reduced fixtures; live publish checks are explicit and use controlled
-accounts.
+The first increment implements text-only Threads publishing behind injected
+binding and HTTP boundaries, including safe error mapping and ambiguous-outcome
+semantics. Next, prove controlled live validation, then add Threads media.
+Instagram may later share private Meta transport/auth helpers while keeping its
+product semantics separate. X remains independent. Required CI uses reduced
+fixtures; live publish checks are explicit and use controlled accounts.
 
 ## 2 — external operator (`planned`)
 

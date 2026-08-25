@@ -4,9 +4,9 @@ This document separates the behavior implemented in this repository from the
 product capabilities planned for the wider Prism ecosystem. A roadmap entry is
 not a claim that the capability exists.
 
-The status below describes `0.1.0-alpha.1` on the execution-foundation branch.
+The status below describes `0.2.0-alpha.1` on the Threads provider-proof branch.
 
-## Current: executable foundation
+## Current: first provider proof
 
 ### Public surfaces
 
@@ -14,13 +14,16 @@ The status below describes `0.1.0-alpha.1` on the execution-foundation branch.
 | --- | --- |
 | `prism-core` | Provider-neutral content, localization, audience, capability, request, validation, result, receipt, and event types |
 | `prism-provider` | Object-safe async adapter contract and deterministic registry |
+| `prism-provider-threads` | Text-only official Threads adapter with injected binding resolver and HTTPS transport |
 | `prism-protocol` | Exact `prism-execution.v1` request and response envelopes plus generated JSON Schema |
 | `prism-runtime` | Stateless `capabilities`, `validate`, and `publish` operations over JSON or NDJSON |
 | `prism-testkit` | Scriptable fake provider, safe call recording, and adapter conformance probe |
 | `xtask` | Contract generation, schema-drift validation, and repository copyright checks |
 
-There are no real network provider adapters in the repository yet. The optional
-test provider performs no external action.
+The optional test provider performs no external action. The Threads adapter can
+call the official production API only when an application explicitly constructs
+it with a credential resolver and transport; required CI never supplies either
+live credentials or a live publishing target.
 
 ### Current execution logic
 
@@ -56,9 +59,14 @@ made, upstream providers cannot participate in a shared transaction.
 - event sequence numbers contain no wall-clock time;
 - variant selection is explicit and deterministic;
 - target idempotency material is derived from the logical publication key and
-  target ID;
+  target ID using collision-free, versioned `prism-idempotency.v1` material;
 - adapters may map or hash this material to provider limits;
 - Prism currently has no durable deduplication store or retry scheduler.
+
+Threads does not expose native idempotency for the implemented publishing path.
+An ambiguous response from its final publish call is therefore classified as
+`outcome_unknown`, with the safe container ID attached for reconciliation.
+Callers must not retry that outcome automatically.
 
 Given the same request, capabilities, and adapter responses, Prism produces the
 same selections, error classes, outcome order, and domain event sequence.
@@ -74,19 +82,26 @@ deterministic boundary.
 - stdout is reserved for protocol envelopes;
 - diagnostics go to stderr without request payloads;
 - real adapters are responsible for secret resolution and upstream redaction.
+- the Threads access-token wrapper never implements display or serialization
+  and always renders as `[REDACTED]` in debug output;
+- Threads requests use HTTPS and bearer authorization rather than embedding a
+  token in Prism domain or protocol payloads.
 
 ### Current verification
 
 Full CI runs formatting, Clippy with warnings denied, all workspace tests,
-generated-contract drift checks, copyright/license checks, and rustdoc with
-warnings denied. Golden request/response fixtures protect the wire contract.
-Required CI contains no live publish operation.
+generated-contract drift checks, copyright/license checks, rustdoc with
+warnings denied, and a separate all-targets compatibility check on the declared
+Rust 1.85 MSRV. Dependency resolution is locked. Golden request/response
+fixtures protect the wire contract. Required CI contains no live publish
+operation.
 
 ## Not implemented
 
 The following capabilities are intentionally absent from the current code:
 
-- live Threads, Instagram, X, Telegram, Mastodon, or other provider calls;
+- Threads image, video, carousel, poll, reply, or provider-option publishing;
+- live Instagram, X, Telegram, Mastodon, or other provider calls;
 - OAuth flows, token storage, or a concrete credential resolver;
 - media fetching, transformation, upload, or durable storage;
 - retries, backoff, scheduling, queues, or long-term idempotency records;
@@ -97,23 +112,27 @@ The following capabilities are intentionally absent from the current code:
 
 ## TODO: implementation sequence
 
-### 1. Prove one real provider
+### 1. Complete the Threads provider proof
 
-Add the first live adapter without changing core ownership boundaries.
+The text adapter and real HTTPS transport exist without changing core ownership
+boundaries. Complete the milestone with controlled account evidence and media
+support.
 
 Exit criteria:
 
-- an injected credential-resolution boundary returns secrets only inside the
-  adapter;
-- capability discovery, preflight, publish, idempotency mapping, error
+- [x] an injected credential-resolution boundary returns secrets only inside
+  the adapter;
+- [x] text capability discovery, preflight, two-step publish, error
   classification, receipt redaction, and rate-limit behavior are tested;
-- required CI uses reduced recorded fixtures and performs no live publish;
-- a separate opt-in validation path can exercise a controlled provider account;
-- any provider-specific fields remain namespaced until proven portable.
+- [x] required CI performs no live publish;
+- [x] ambiguous external-action outcomes are not marked safe to retry;
+- [ ] a separate opt-in validation path exercises a controlled provider
+  account;
+- [ ] image, video, and carousel media resolution is proven;
+- [ ] provider-specific options are implemented only through namespaced fields.
 
-Threads is the preferred first Meta proof. Instagram may reuse private
-transport/auth helpers later, while retaining a distinct product adapter. X and
-other providers remain independent adapters.
+Instagram may reuse private Meta transport/auth helpers later while retaining a
+distinct product adapter. X and other providers remain independent adapters.
 
 ### 2. Prove an external operator
 
