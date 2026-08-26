@@ -62,6 +62,7 @@ schemas live in [`contracts/`](contracts/).
 | [`implementation status`](docs/status.md) | Exact current behavior, explicit non-features, and TODO exit criteria |
 | [`engineering principles`](docs/engineering-principles.md) | Normative SOLID, OOP, Clean Architecture, scope, and review invariants |
 | [`architecture`](docs/architecture.md) | Ownership, dependency, determinism, and provider boundaries |
+| [`content variants`](docs/content-variants.md) | Human-readable localization, voice, audience, provider, and format semantics |
 | [`protocol`](docs/protocol.md) | `prism-execution.v1` envelope and transport contract |
 | [`ecosystem`](docs/ecosystem.md) | Boundaries between Prism, hub, clients, AI, HQBase, and infrastructure |
 | [`Threads provider`](docs/providers/threads.md) | Current live-adapter boundary, capabilities, and retry safety |

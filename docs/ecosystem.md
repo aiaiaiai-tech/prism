@@ -34,14 +34,14 @@ semantic ownership boundaries, not merely deployment choices.
   in `prism-core`;
 - infrastructure patching application source during deployment.
 
-## Localization
+## Content variants
 
-Prism has no canonical language. A Ukrainian variant is not derived from an
-English source unless an external producer explicitly creates it that way.
+Prism treats locale, voice/style, audience, provider targeting, and publication
+format as independent dimensions. It has no canonical language and does not
+silently infer one dimension from another.
 
-`uk-UA` is a BCP-47 locale. `uk_SP` is a voice/style profile and therefore a
-separate reference. Audience geography is separate again. This lets one locale
-have several voices or audiences without inventing invalid language tags.
+See [`content-variants.md`](content-variants.md) for the short human-readable
+contract.
 
 ## Persistence
 
