@@ -2,23 +2,16 @@
 
 ## Purpose
 
-Prism owns deterministic delivery semantics and the public contracts required
-to invoke them. It does not own people, workspaces, scheduling, persistence,
-deployment, provider credentials, client UX, or content generation.
+Prism owns deterministic publishing semantics and the contracts used to invoke them. It does not own accounts, workspaces, scheduling, persistence, deployment, provider credentials, client UI, or content generation.
 
-The design optimizes for four properties:
+Four rules shape the design:
 
-1. a direct, stateless mode is always valid;
-2. localization is explicit and has no canonical intermediate language;
-3. provider-specific truth stays behind capability and adapter contracts;
-4. an external action is observable, idempotency-aware, and never implicit.
+1. direct stateless execution stays valid;
+2. content variants are explicit and no language is canonical;
+3. provider-specific behavior stays behind adapter contracts;
+4. external actions are observable, idempotency-aware, and never implicit.
 
-All implementations also follow the normative SOLID and object-oriented rules
-in [`engineering-principles.md`](engineering-principles.md). In Rust, object
-orientation means cohesive structs/enums, encapsulated behavior, focused traits,
-substitutable adapters, and explicit composition; it does not require
-inheritance or classes. Pure domain functions are valid implementation details
-inside these ownership boundaries.
+All implementations follow the normative SOLID and object-oriented rules in [`engineering-principles.md`](engineering-principles.md).
 
 ## Dependency direction
 
@@ -32,32 +25,26 @@ flowchart TD
     Testkit["prism-testkit"] --> Provider
 ```
 
-`prism-core` has no network, storage, process, client, HQBase, or AI dependency.
-The runtime depends inward on contracts; the contracts never depend on runtime
-implementation.
+`prism-core` has no network, storage, process, client, HQBase, or ai dependency. Runtime depends on contracts; contracts never depend on runtime implementation.
 
 ## Canonical concepts
 
-- `ContentVariant` is an explicit, immutable delivery candidate. Locale,
-  audience, voice profile, and provider targeting are independent dimensions.
-- `PublishTarget` identifies a provider channel and an ordered variant
-  selection. Credentials are opaque references.
-- `ProviderCapabilities` is a runtime snapshot of formats, media kinds, and
-  limits. It is data and may change without a Prism release.
-- `PublishRequest` combines variants and targets with a dispatch policy and an
-  idempotency key.
-- `TargetOutcome` records one independent target result. A provider failure does
-  not erase results for other targets.
-- `ExecutionEvent` is deterministic and sequence-numbered. It contains no wall
-  clock time; operational timestamps belong to observability infrastructure.
+- `ContentVariant` — one explicit representation of a publication intent. Locale, voice profile, audience, provider target, format, body, and provenance stay independent.
+- `PublishTarget` — one provider destination plus explicit variant selection. Credentials are opaque references.
+- `ProviderCapabilities` — the provider adapter's current formats, media kinds, and limits.
+- `PublishRequest` — variants, targets, dispatch policy, and one logical idempotency key.
+- `TargetOutcome` — the independent result for one target.
+- `ExecutionEvent` — a deterministic sequence-numbered domain event without wall-clock time.
+
+See [`content-variants.md`](content-variants.md) for the human-facing content model.
 
 ## Two-phase execution
 
 ```mermaid
 flowchart TD
     Input["Immutable request"] --> Structure["Structural validation"]
-    Structure --> Preflight["Resolve variants + capabilities"]
-    Preflight --> Adapter["Adapter validation"]
+    Structure --> Preflight["Resolve variant + capabilities"]
+    Preflight --> Adapter["Provider preflight"]
     Adapter --> Policy{"Dispatch policy"}
     Policy -->|require_all_valid| Gate["All targets must pass"]
     Policy -->|independent| Publish["Publish valid targets"]
@@ -65,67 +52,48 @@ flowchart TD
     Publish --> Report["Ordered outcomes + events"]
 ```
 
-No target is published before preflight completes for every target. This makes
-`require_all_valid` meaningful and ensures unsupported features fail before an
-external action whenever Prism can determine that locally.
-
-The policies are explicit:
+Prism completes preflight for every target before it publishes any target.
 
 | Policy | Behavior |
 | --- | --- |
 | `require_all_valid` | If any target fails preflight, Prism performs no external action. Valid targets become `skipped`. |
-| `independent` | Every valid target is attempted; invalid or failed targets remain isolated in their own outcomes. |
+| `independent` | Every valid target is attempted. Invalid or failed targets stay isolated in their own outcomes. |
 
-Prism does not promise cross-provider atomicity. Once dispatch begins, external
-systems cannot participate in one transaction.
+Prism does not promise cross-provider atomicity. External providers cannot join one shared transaction.
 
 ## Determinism boundary
 
-Given the same request, capability snapshots, and adapter responses, Prism emits
-the same selected variants, outcome order, error classes, and domain event
-sequence. Provider latency, generated external IDs, and upstream state are
-observations, not deterministic inputs.
+Given the same request, capability snapshots, and adapter responses, Prism returns the same variant selections, outcome order, error classes, and event sequence.
 
-Output ordering always follows target order, even if a future runtime executes
-provider calls concurrently.
+Provider latency, upstream state, and external IDs are observations outside that deterministic boundary. Output order still follows target order if future runtime execution becomes concurrent.
 
 ## Provider boundary
 
-An adapter owns:
+A provider adapter owns:
 
 - provider HTTP and OAuth behavior;
-- credential resolution through an injected mechanism;
+- credential resolution through an injected boundary;
 - provider-native validation and error mapping;
-- upstream idempotency support and safe receipt extraction;
-- redaction of upstream responses.
+- native idempotency behavior and safe receipt extraction;
+- upstream-response redaction.
 
-The first implementation is `prism-provider-threads`. It resolves opaque
-channel and credential references through an injected boundary, keeps the token
-out of provider-neutral values and debug output, and uses an injected transport
-so required CI can prove behavior without live calls.
+Core owns only provider-neutral capabilities and stable error classes. Provider-specific fields stay namespaced until the concept proves shared across providers.
 
-An adapter must distinguish a failure that is safe to retry from an ambiguous
-external-action outcome. `outcome_unknown` means the action may already have
-succeeded; the caller must reconcile provider state before another attempt.
+`outcome_unknown` means an external action may already have succeeded. The caller must reconcile provider state before retry.
 
-Core owns only provider-neutral capabilities and stable error classes. A new
-provider feature first uses a namespaced extension. It becomes canonical only
-after the concept proves genuinely shared.
+The first real adapter is `prism-provider-threads`. See [`providers/threads.md`](providers/threads.md).
 
 ## Protocol boundary
 
-`prism-execution.v1` is independent from crate and binary versions. The initial
-transport is JSON or NDJSON over a local process:
+`prism-execution.v1` is independent from crate and binary versions. The current transport is JSON or NDJSON over a local process:
 
-- stdin contains protocol envelopes;
-- stdout contains protocol envelopes only;
-- diagnostics use stderr;
-- malformed input is reported without echoing source payloads.
+- stdin receives protocol envelopes;
+- stdout emits protocol envelopes only;
+- stderr carries diagnostics;
+- malformed input is reported without echoing the source payload.
 
-The transport may later become a daemon, Unix socket, or internal HTTP service
-without changing execution semantics.
+A future transport may change without changing publishing semantics.
 
-For the exact boundary between implemented and planned behavior, see
-[`status.md`](status.md).
+See [`status.md`](status.md) for the exact implemented/planned boundary.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->
