@@ -13,12 +13,20 @@ The design optimizes for four properties:
 3. provider-specific truth stays behind capability and adapter contracts;
 4. an external action is observable, idempotency-aware, and never implicit.
 
+All implementations also follow the normative SOLID and object-oriented rules
+in [`engineering-principles.md`](engineering-principles.md). In Rust, object
+orientation means cohesive structs/enums, encapsulated behavior, focused traits,
+substitutable adapters, and explicit composition; it does not require
+inheritance or classes. Pure domain functions are valid implementation details
+inside these ownership boundaries.
+
 ## Dependency direction
 
 ```mermaid
 flowchart TD
     Protocol["prism-protocol"] --> Core["prism-core"]
     Provider["prism-provider"] --> Core
+    Threads["prism-provider-threads"] --> Provider
     Runtime["prism-runtime"] --> Protocol
     Runtime --> Provider
     Testkit["prism-testkit"] --> Provider
@@ -90,6 +98,15 @@ An adapter owns:
 - provider-native validation and error mapping;
 - upstream idempotency support and safe receipt extraction;
 - redaction of upstream responses.
+
+The first implementation is `prism-provider-threads`. It resolves opaque
+channel and credential references through an injected boundary, keeps the token
+out of provider-neutral values and debug output, and uses an injected transport
+so required CI can prove behavior without live calls.
+
+An adapter must distinguish a failure that is safe to retry from an ambiguous
+external-action outcome. `outcome_unknown` means the action may already have
+succeeded; the caller must reconcile provider state before another attempt.
 
 Core owns only provider-neutral capabilities and stable error classes. A new
 provider feature first uses a namespaced extension. It becomes canonical only

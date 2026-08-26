@@ -18,6 +18,8 @@ pub enum DeliveryErrorClass {
     Retryable,
     /// Provider rate limit with optional retry guidance.
     RateLimited,
+    /// The external action may have succeeded; retry requires reconciliation.
+    OutcomeUnknown,
     /// Missing, expired, or insufficient authorization.
     AuthRequired,
     /// Provider understood but rejected the request.
@@ -39,6 +41,9 @@ pub struct DeliveryError {
     /// Suggested delay for a rate limit or transient failure.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub retry_after_seconds: Option<u64>,
+    /// Namespaced, explicitly safe recovery metadata.
+    #[serde(default, skip_serializing_if = "Extensions::is_empty")]
+    pub details: Extensions,
 }
 
 impl DeliveryError {
@@ -54,6 +59,7 @@ impl DeliveryError {
             code: code.into(),
             message: message.into(),
             retry_after_seconds: None,
+            details: Extensions::new(),
         }
     }
 
@@ -61,6 +67,13 @@ impl DeliveryError {
     #[must_use]
     pub const fn with_retry_after(mut self, seconds: u64) -> Self {
         self.retry_after_seconds = Some(seconds);
+        self
+    }
+
+    /// Adds explicitly safe, namespaced recovery metadata.
+    #[must_use]
+    pub fn with_detail(mut self, key: crate::NamespacedKey, value: serde_json::Value) -> Self {
+        self.details.insert(key, value);
         self
     }
 }

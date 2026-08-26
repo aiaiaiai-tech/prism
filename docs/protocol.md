@@ -42,4 +42,9 @@ The current implementation supports only the local JSON/NDJSON process
 transport. Remote transports, daemon lifecycle, retries, and durable
 idempotency are TODO and are not implied by the versioned envelope.
 
+Delivery failures include `outcome_unknown` for a provider call whose external
+effect cannot be determined safely. Consumers must not treat it as an ordinary
+retryable transport failure. Namespaced `details` may carry redacted recovery
+metadata needed for reconciliation.
+
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

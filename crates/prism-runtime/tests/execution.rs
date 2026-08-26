@@ -178,7 +178,10 @@ async fn independent_policy_isolates_targets_and_derives_idempotency() {
     assert_eq!(report.outcomes[1].status, TargetStatus::Failed);
     let calls = fake.recorded_publishes().expect("fake state");
     assert_eq!(calls.len(), 1);
-    assert_eq!(calls[0].idempotency_key, "publication-42:target-valid");
+    assert_eq!(
+        calls[0].idempotency_key,
+        "prism-idempotency.v1:14:publication-42:12:target-valid"
+    );
 }
 
 #[tokio::test]

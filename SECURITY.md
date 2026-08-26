@@ -16,6 +16,8 @@ a public issue before the impact and remediation path have been assessed.
 - Runtime logs metadata only; request payloads are neither logged nor echoed.
 - Provider adapters own secret resolution and must redact upstream responses.
 - Publishing is an explicit external-action boundary with an idempotency key.
+- `outcome_unknown` failures must be reconciled before retrying, preventing an
+  ambiguous provider response from becoming an accidental duplicate publish.
 - Required CI never performs live provider calls.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

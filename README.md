@@ -19,14 +19,15 @@ The repository is intentionally useful on its own:
 | --- | --- |
 | `prism-core` | Canonical content, localization, capability, request, result, and error types |
 | `prism-provider` | Object-safe asynchronous provider adapter contract and registry |
+| `prism-provider-threads` | Official Threads text adapter with injected channel/credential and HTTP boundaries |
 | `prism-protocol` | `prism-execution.v1` request/response envelopes and JSON Schema |
 | `prism-runtime` | Stateless preflight and dispatch engine plus JSON/NDJSON process boundary |
 | `prism-testkit` | Scriptable fake provider and conformance helpers |
 | `xtask` | Reproducible contract generation and drift checks |
 
 The first milestone is a working vertical slice rather than an empty crate
-skeleton. Real network adapters deliberately come later, after the contract is
-proven by the fake provider and golden protocol tests.
+skeleton. The first provider proof adds text publishing through the official
+Threads API; media and additional providers remain explicit later increments.
 
 ## Try the process boundary
 
@@ -45,9 +46,9 @@ stderr and never log request payloads.
 
 ```bash
 cargo fmt --all -- --check
-cargo clippy --workspace --all-targets --all-features -- -D warnings
-cargo test --workspace --all-features
-cargo run -p xtask -- check
+cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+cargo test --locked --workspace --all-features
+cargo run --locked -p xtask -- check
 ```
 
 The canonical boundaries are documented in
@@ -59,24 +60,29 @@ schemas live in [`contracts/`](contracts/).
 | Document | Purpose |
 | --- | --- |
 | [`implementation status`](docs/status.md) | Exact current behavior, explicit non-features, and TODO exit criteria |
+| [`engineering principles`](docs/engineering-principles.md) | Normative SOLID, OOP, Clean Architecture, scope, and review invariants |
 | [`architecture`](docs/architecture.md) | Ownership, dependency, determinism, and provider boundaries |
 | [`protocol`](docs/protocol.md) | `prism-execution.v1` envelope and transport contract |
 | [`ecosystem`](docs/ecosystem.md) | Boundaries between Prism, hub, clients, AI, HQBase, and infrastructure |
+| [`Threads provider`](docs/providers/threads.md) | Current live-adapter boundary, capabilities, and retry safety |
 | [`roadmap`](docs/roadmap.md) | Evidence-driven implementation order |
 | [`copyright and licensing`](docs/licensing.md) | aiaiaiai signature, Apache-2.0 policy, exclusions, and automation |
 
 ## Ecosystem boundary
 
-`prism-hub`, `prism-web`, `prism-telegram`, `prism-cli`, and `prism-ai` are
-consumers or orchestrators. They do not redefine delivery truth. HQBase and the
-aiaiaiai infrastructure remain independent peers connected through public,
-versioned contracts.
+`prism-hub` orchestrates Prism and optional `prism-ai` generation.
+`prism-bot` and the planned `prism-panel` are clients of the hub; they never
+depend on Prism, AI, or provider APIs directly. Native panel clients, including
+`prism-panel-ios`, are outside the current scope. HQBase and the aiaiaiai
+infrastructure remain independent peers connected through public, versioned
+contracts.
 
 ## Status
 
-Pre-1.0 executable foundation. The current repository has a fake provider but
-no live provider adapter, control plane, client, database, or deployment. See
-the [implementation status](docs/status.md) for the precise current/TODO split.
+Pre-1.0 provider proof. The repository has a fake provider and an injectable
+Threads text adapter, but no configured credentials, live CI calls, control
+plane, client, database, or deployment. See the [implementation
+status](docs/status.md) for the precise current/TODO split.
 
 Wire and crate APIs follow semantic versioning; a protocol version is never
 inferred from a binary version.

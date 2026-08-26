@@ -15,7 +15,7 @@
           "selected_variant_id": "uk-personal",
           "status": "published",
           "receipt": {
-            "external_id": "fake:test.fake:example-publication:threads-uk"
+            "external_id": "fake:test.fake:prism-idempotency.v1:19:example-publication:10:threads-uk"
           }
         }
       ],

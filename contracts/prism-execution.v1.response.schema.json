@@ -91,6 +91,10 @@
           "description": "Stable adapter or Prism code.",
           "type": "string"
         },
+        "details": {
+          "description": "Namespaced, explicitly safe recovery metadata.",
+          "$ref": "#/$defs/Extensions"
+        },
         "message": {
           "description": "Safe message that contains no credentials or raw upstream payload.",
           "type": "string"
@@ -129,6 +133,11 @@
           "description": "Provider rate limit with optional retry guidance.",
           "type": "string",
           "const": "rate_limited"
+        },
+        {
+          "description": "The external action may have succeeded; retry requires reconciliation.",
+          "type": "string",
+          "const": "outcome_unknown"
         },
         {
           "description": "Missing, expired, or insufficient authorization.",
