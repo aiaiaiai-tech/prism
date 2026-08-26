@@ -25,9 +25,9 @@ A provider binding advertises only capabilities that are actually composed and a
 
 ### Credential boundary
 
-Provider access and refresh tokens never appear in client requests, Hub client responses, Prism execution envelopes, publication records, or logs.
+Provider access and refresh tokens never appear in client requests, Hub client responses, Hub-to-Prism calls, Prism execution envelopes, publication records, fixtures, or logs.
 
-Prism execution receives an opaque `credential_ref`. A focused `CredentialResolver` port resolves that reference at the provider-adapter boundary. The production resolver is supplied explicitly at the composition root.
+Prism execution receives an opaque `credential_ref`. A focused `CredentialResolver` port resolves that reference at the provider-adapter boundary. The production resolver is supplied explicitly at the composition root. This boundary applies even when Hub and Prism are composed in-process; transport choice must not weaken the contract.
 
 Secret-bearing values must redact `Debug` and error output. Resolver failures are typed and must not reveal credential material.
 
