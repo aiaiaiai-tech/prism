@@ -60,6 +60,7 @@ schemas live in [`contracts/`](contracts/).
 | Document | Purpose |
 | --- | --- |
 | [`implementation status`](docs/status.md) | Exact current behavior, explicit non-features, and TODO exit criteria |
+| [`engineering principles`](docs/engineering-principles.md) | Normative SOLID, OOP, Clean Architecture, scope, and review invariants |
 | [`architecture`](docs/architecture.md) | Ownership, dependency, determinism, and provider boundaries |
 | [`protocol`](docs/protocol.md) | `prism-execution.v1` envelope and transport contract |
 | [`ecosystem`](docs/ecosystem.md) | Boundaries between Prism, hub, clients, AI, HQBase, and infrastructure |
@@ -69,10 +70,12 @@ schemas live in [`contracts/`](contracts/).
 
 ## Ecosystem boundary
 
-`prism-hub`, `prism-web`, `prism-telegram`, `prism-cli`, and `prism-ai` are
-consumers or orchestrators. They do not redefine delivery truth. HQBase and the
-aiaiaiai infrastructure remain independent peers connected through public,
-versioned contracts.
+`prism-hub` orchestrates Prism and optional `prism-ai` generation.
+`prism-bot` and the planned `prism-panel` are clients of the hub; they never
+depend on Prism, AI, or provider APIs directly. Native panel clients, including
+`prism-panel-ios`, are outside the current scope. HQBase and the aiaiaiai
+infrastructure remain independent peers connected through public, versioned
+contracts.
 
 ## Status
 

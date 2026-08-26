@@ -3,6 +3,13 @@
 Prism is contract-first. A change is complete only when its ownership boundary,
 failure behavior, tests, and public contract are clear.
 
+The [engineering principles](docs/engineering-principles.md) are mandatory.
+Reviewers must reject changes that violate SOLID, hide dependencies, replace
+cohesive object boundaries with procedural orchestration, or introduce
+speculative support for out-of-scope native panel clients. Clean Architecture
+governs application boundaries; MVVM may organize panel presentation state but
+does not replace those boundaries.
+
 ## Local checks
 
 ```bash
@@ -36,5 +43,10 @@ lockfiles, and third-party material follow the exceptions in
 Provider adapters must keep HTTP, OAuth, and provider-native error semantics
 inside the adapter. Core types may grow only when the concept is genuinely
 provider-neutral.
+
+Every material pull request must identify the owning object/module, its focused
+port, the injected implementations, and the contract tests that prove
+substitutability. Prefer composition over inheritance and reject central
+provider, channel, or vendor switches.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

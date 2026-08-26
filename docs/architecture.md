@@ -13,6 +13,13 @@ The design optimizes for four properties:
 3. provider-specific truth stays behind capability and adapter contracts;
 4. an external action is observable, idempotency-aware, and never implicit.
 
+All implementations also follow the normative SOLID and object-oriented rules
+in [`engineering-principles.md`](engineering-principles.md). In Rust, object
+orientation means cohesive structs/enums, encapsulated behavior, focused traits,
+substitutable adapters, and explicit composition; it does not require
+inheritance or classes. Pure domain functions are valid implementation details
+inside these ownership boundaries.
+
 ## Dependency direction
 
 ```mermaid

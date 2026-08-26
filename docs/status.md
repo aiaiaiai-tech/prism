@@ -107,7 +107,8 @@ The following capabilities are intentionally absent from the current code:
 - retries, backoff, scheduling, queues, or long-term idempotency records;
 - accounts, workspaces, approvals, persistence, audit history, or reporting;
 - an HTTP service, daemon lifecycle, or remote transport;
-- `prism-hub`, `prism-cli`, `prism-web`, `prism-telegram`, or `prism-ai`;
+- implemented `prism-hub`, `prism-ai`, `prism-bot`, or `prism-panel`
+  applications; the first three currently have repository shells only;
 - deployment artifacts or hosted infrastructure.
 
 ## TODO: implementation sequence
@@ -134,33 +135,32 @@ Exit criteria:
 Instagram may reuse private Meta transport/auth helpers later while retaining a
 distinct product adapter. X and other providers remain independent adapters.
 
-### 2. Prove an external operator
+### 2. Introduce the control plane
 
-Create `prism-cli` as the first consumer outside the Rust workspace.
-
-Exit criteria:
-
-- direct JSON/NDJSON execution works without a hub;
-- machine-readable output and exit behavior are stable and documented;
-- credentials enter only through a supported resolver, never request payloads;
-- compatibility is tested against committed protocol fixtures.
-
-### 3. Introduce the control plane
-
-Create `prism-hub` only after the execution protocol and one real adapter have
-been proven.
+Implement the existing `prism-hub` repository after the execution protocol and
+one real adapter have been proven.
 
 The hub will own accounts, workspaces, OAuth lifecycle, scheduling, persistence
 policy, approvals, audit history, jobs, and its external API. It will invoke
 Prism through a versioned boundary and will not reimplement provider HTTP
 semantics. The current preferred direction is a conventional Ruby/Rails API,
-PostgreSQL, and database-backed jobs; this remains a design target, not shipped
-code.
+PostgreSQL, and database-backed jobs, with Clean Architecture and SOLID object
+boundaries; this remains a design target, not shipped code.
+
+### 3. Add explicit intelligence
+
+Implement `prism-ai` as an optional internal service behind a hub-owned
+generation port. AI output must become explicit `ContentVariant` values with
+provenance. It cannot bypass permissions, approval, preflight, dispatch policy,
+or idempotency behavior.
 
 ### 4. Add clients and deployment profiles
 
 - generate hub clients from its versioned API contract;
-- build Telegram and web interactions against the hub, not provider APIs;
+- build Telegram bot and Mini App modules in `prism-bot` against the hub, not
+  provider APIs;
+- build the web administration experience in `prism-panel` against the hub;
+- keep future messaging networks in isolated `prism-bot` channel adapters;
 - support direct stateless, self-hosted hub, aiaiaiai-managed, and isolated
   dedicated-client profiles from identical versioned artifacts;
 - keep application build/release ownership separate from infrastructure wiring.
@@ -172,13 +172,6 @@ code.
 - keep client-domain concepts outside `prism-core`;
 - document retention and data-minimization policies per deployment profile.
 
-### 6. Add explicit intelligence
-
-Create `prism-ai` only after manual localization and delivery contracts are
-stable. AI output must become explicit `ContentVariant` values with provenance.
-It cannot bypass permissions, approval, preflight, dispatch policy, or
-idempotency behavior.
-
 ## Deferred decisions
 
 These require separate evidence and repository-level decisions:
@@ -189,9 +182,16 @@ These require separate evidence and repository-level decisions:
 - exact `prism-hub` license;
 - canonical aiaiaiai infrastructure repository;
 - unattended HQBase service authorization;
-- delivery concurrency and retry semantics.
+- delivery concurrency and retry semantics;
+- optional developer CLI and its concrete operator workflow.
+
+Native panel applications, including `prism-panel-ios`, are outside the current
+scope and roadmap. No current component may introduce speculative native-client
+abstractions for them.
 
 See [`architecture.md`](architecture.md) for ownership invariants,
+[`engineering-principles.md`](engineering-principles.md) for mandatory SOLID,
+OOP, and scope rules,
 [`protocol.md`](protocol.md) for the wire contract, and
 [`roadmap.md`](roadmap.md) for the ecosystem-level sequence.
 
