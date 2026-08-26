@@ -2,9 +2,7 @@
 
 Prism publishes an intent, not one canonical text.
 
-One publication may contain several explicit `ContentVariant` values. Each
-variant describes how the same intent should appear in one context. Prism does
-not infer one dimension from another.
+One publication may contain several explicit `ContentVariant` values. Each variant describes how the same intent should appear in one context. Prism never infers one dimension from another.
 
 | Dimension | Meaning | Example |
 | --- | --- | --- |
@@ -14,32 +12,26 @@ not infer one dimension from another.
 | `provider_target` | Optional provider-specific variant | `meta.instagram` |
 | `format` | Publication surface | `post`, `story` |
 | `body` | Text and media | caption + image |
-| `provenance` | Where the variant came from | human, import, transform, AI |
+| `provenance` | Where the variant came from | human, import, transform, ai |
 
 ## Rules
 
-- Prism has no canonical language. A Ukrainian variant is not implicitly
-  derived from an English one, or vice versa.
-- Locale is not voice. `uk-UA` is a locale; `uk_SP` is a style/voice profile.
-- Voice, audience, provider, and format are independent choices.
-- Translation, localization, stylization, or AI generation happen before
-  delivery. Their output must be an explicit `ContentVariant`.
-- Provider adaptation is separate from voice. A Threads post and an Instagram
-  story may use different variants even with the same locale and voice.
-- Fallback is explicit. A target selects one exact variant or an ordered list;
-  Prism does not silently fall back to another language or style.
-- Generated variants keep provenance. AI does not bypass normal validation or
-  delivery rules.
+- Prism has no canonical language. A Ukrainian variant is not implicitly derived from an English one, or vice versa.
+- Locale is not voice. `uk-UA` is a locale; `uk_SP` is a voice profile.
+- Voice profile, audience, provider target, and format are independent choices.
+- Translation, localization, stylization, or ai generation happens before delivery and must produce an explicit `ContentVariant`.
+- Provider adaptation is separate from voice. A Threads post and an Instagram story may use different variants with the same locale and voice profile.
+- Fallback is explicit. A target selects one exact variant or an ordered list. Prism never silently changes language or voice profile.
+- Generated variants keep provenance. ai never bypasses normal validation or delivery rules.
 
-For example, one release announcement may have:
+One release announcement may therefore have:
 
 - `uk-UA` + `0x0sky.uk_SP` + Threads post;
 - `en-GB` + `0x0sky.en` + Threads post;
 - `uk-UA` + `0x0sky.uk_SP` + Instagram story.
 
-These are peer representations of one publication. None must be the source text
-for the others.
+These are peer representations of one publication. None has to be the source text for the others.
 
-In short: **one intent → explicit variants → deterministic delivery**.
+**one intent → explicit variants → deterministic delivery**
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->
