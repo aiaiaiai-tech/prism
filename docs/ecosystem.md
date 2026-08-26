@@ -1,70 +1,56 @@
 # Ecosystem boundaries
 
-Prism is one repository in a larger product family. Repository boundaries are
-semantic ownership boundaries, not merely deployment choices.
+Prism is one product in a larger family. Repository boundaries are ownership boundaries, not deployment choices.
 
 | Component | Owns | Integrates through |
 | --- | --- | --- |
-| `prism` | Deterministic execution, provider contract, wire protocol | Rust APIs and `prism-execution.v1` |
-| `prism-hub` | Workspaces, identities, channels, OAuth lifecycle, scheduling, persistence policy, approvals, API | `prism-execution.v1` |
-| `prism-bot` | Modular Telegram bot/Mini App and future messaging surfaces | Generated hub API client |
-| `prism-panel` | Web administration, onboarding, configuration, and operational UX | Generated hub API client |
-| `prism-ai` | Optional explicit variant production | Public content contracts and a hub extension boundary |
+| `prism` | Deterministic publishing, provider adapters, execution protocol | Rust APIs and `prism-execution.v1` |
+| `prism-hub` | Workspaces, identities, channels, OAuth lifecycle, scheduling, persistence, approvals, external API | `prism-execution.v1` |
+| `prism-bot` | Telegram and future messaging clients | Generated hub API client |
+| `prism-panel` | Planned web administration client | Generated hub API client |
+| `prism-ai` | Optional content-variant generation | Hub-owned generation port |
 | HQBase | Independent mail product | HQBase public Mail API |
-| infrastructure authority | Runtime hosts, secrets wiring, databases, storage, DNS, TLS, backups | Immutable application artifacts |
+| infrastructure | Hosts, secrets wiring, databases, storage, DNS, TLS, backups | Versioned application artifacts |
 
-## Allowed direction
+## Dependency direction
 
-- bot and panel clients depend on `prism-hub`, never on Prism, AI, or provider
-  APIs;
-- `prism-hub` invokes Prism, never the reverse;
-- `prism-hub` invokes `prism-ai` through an optional generation port;
-- `prism-ai` returns explicit `ContentVariant` values with provenance before
-  delivery and never invokes Prism;
-- infrastructure consumes versioned artifacts and documented runtime contracts;
-- HQBase integration belongs to a hub adapter using its public API.
+- Clients depend on `prism-hub`, never on Prism, `prism-ai`, or provider APIs.
+- `prism-hub` invokes Prism through the versioned execution boundary.
+- `prism-hub` may invoke `prism-ai` through an optional generation port.
+- `prism-ai` returns explicit `ContentVariant` values with provenance and never publishes directly.
+- Infrastructure consumes versioned artifacts and documented runtime contracts.
+- HQBase integration belongs in a hub adapter using the public HQBase API.
 
 ## Forbidden coupling
 
-- Prism importing client, hub, AI, HQBase, or infrastructure internals;
-- a shared mutable application database between products;
-- raw access to another product's tables or browser cookies;
+- Prism importing hub, client, ai, HQBase, or infrastructure internals;
+- shared mutable application databases between products;
+- direct access to another product's tables or browser cookies;
 - provider tokens in bot or panel clients;
-- product-specific concepts such as animals, donations, expenses, or campaigns
-  in `prism-core`;
+- client-domain concepts such as animals, donations, expenses, or campaigns in `prism-core`;
 - infrastructure patching application source during deployment.
 
 ## Content variants
 
-Prism treats locale, voice/style, audience, provider targeting, and publication
-format as independent dimensions. It has no canonical language and does not
-silently infer one dimension from another.
+Locale, voice profile, audience, provider target, and publication format are independent dimensions. Prism has no canonical language and never silently infers one dimension from another.
 
-See [`content-variants.md`](content-variants.md) for the short human-readable
-contract.
+See [`content-variants.md`](content-variants.md).
 
 ## Persistence
 
-Persistence is a `prism-hub` policy, not a prerequisite for publishing. A
-personal installation may discard content after delivery while retaining only
-minimal delivery metadata. An organization may opt into durable drafts, media,
-receipts, metrics, and reporting. Both use identical Prism semantics.
+Persistence is a `prism-hub` policy, not a Prism requirement. A personal deployment may keep only delivery metadata. An organization may keep drafts, media, receipts, metrics, and reporting. Both use the same Prism publishing semantics.
 
 ## Deployment profiles
 
-- **direct stateless:** Prism runtime with no database;
-- **self-hosted hub:** hub, runtime, PostgreSQL, and optional object storage;
-- **aiaiaiai-managed:** the same versioned artifacts with managed wiring;
-- **dedicated client:** the same artifacts in isolated infrastructure.
+- **direct stateless** — Prism runtime without a database;
+- **self-hosted hub** — hub, runtime, PostgreSQL, and optional object storage;
+- **aiaiaiai-managed** — the same versioned artifacts with managed infrastructure;
+- **dedicated client** — the same artifacts in isolated infrastructure.
 
-No profile may require aiaiaiai infrastructure for correctness.
+No deployment profile may require aiaiaiai infrastructure for Prism correctness.
 
-Only the `prism` execution foundation and first Threads provider proof are
-implemented today. Public repository shells for `prism-hub`, `prism-ai`, and
-`prism-bot` do not yet constitute shipped services. `prism-panel` is planned;
-native variants including `prism-panel-ios` are outside the current scope. See
-[`status.md`](status.md) for implementation state and exit criteria, and
-[`engineering-principles.md`](engineering-principles.md) for the normative
-SOLID/OOP boundary.
+Implementation state for peer products is tracked in their own repositories. Prism's own implemented/planned boundary lives in [`status.md`](status.md).
+
+Native panel applications, including `prism-panel-ios`, remain outside the current scope. They require a separate product and architecture decision.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

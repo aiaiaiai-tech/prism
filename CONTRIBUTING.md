@@ -1,14 +1,8 @@
 # Contributing
 
-Prism is contract-first. A change is complete only when its ownership boundary,
-failure behavior, tests, and public contract are clear.
+Prism is contract-first. A change is ready only when ownership, failure behavior, tests, and public contracts are clear.
 
-The [engineering principles](docs/engineering-principles.md) are mandatory.
-Reviewers must reject changes that violate SOLID, hide dependencies, replace
-cohesive object boundaries with procedural orchestration, or introduce
-speculative support for out-of-scope native panel clients. Clean Architecture
-governs application boundaries; MVVM may organize panel presentation state but
-does not replace those boundaries.
+The [engineering principles](docs/engineering-principles.md) are normative.
 
 ## Local checks
 
@@ -19,34 +13,39 @@ cargo test --locked --workspace --all-features
 cargo run --locked -p xtask -- check
 ```
 
-Run `cargo run -p xtask -- write` only when a deliberate protocol change should
-update committed JSON Schemas. Review the resulting diff and add a migration
-note for every breaking pre-1.0 contract change.
+Run `cargo run -p xtask -- write` only for an intentional protocol change. Review generated schema diffs and add a migration note for every breaking pre-1.0 contract change.
 
-Full CI also checks all targets and features with the declared Rust 1.85 MSRV.
-The same `xtask check` command validates repository copyright notices. New
-authored Rust, TOML, and YAML files must use the canonical aiaiaiai signature
-and the repository-approved SPDX identifier. Generated schemas, JSON fixtures,
-lockfiles, and third-party material follow the exceptions in
-[`docs/licensing.md`](docs/licensing.md).
+Full CI also checks the declared Rust 1.85 minimum supported version. `xtask check` validates generated contracts and repository copyright rules.
 
 ## Pull requests
 
-- branch from `master` using `feature/` or `fix/`;
+- branch from `master` with `feature/` or `fix/`;
 - keep one coherent task per branch and pull request;
 - open as Draft and require Full CI to pass;
-- do not add live provider calls to required CI;
-- do not mix merge with deployment;
-- do not commit tokens, provider payloads containing personal data, or captured
-  live responses that have not been reduced to safe fixtures.
+- never add live provider calls to required CI;
+- keep merge and deployment separate;
+- never commit tokens, unsafe provider payloads, or unreduced live responses.
 
-Provider adapters must keep HTTP, OAuth, and provider-native error semantics
-inside the adapter. Core types may grow only when the concept is genuinely
-provider-neutral.
+Provider adapters own provider HTTP, OAuth, native validation, and native error mapping. Provider-neutral behavior belongs in core contracts.
 
-Every material pull request must identify the owning object/module, its focused
-port, the injected implementations, and the contract tests that prove
-substitutability. Prefer composition over inheritance and reject central
-provider, channel, or vendor switches.
+Every material pull request must identify the owning object or module, the focused port, the injected implementations, and the tests that prove substitution.
+
+## Documentation style
+
+Human-facing documentation uses en_SV:
+
+- plain English and short paragraphs;
+- sentence-case headings and direct verbs;
+- exact repository, type, field, and protocol identifiers;
+- `ai` in prose and `prism-ai` for the repository;
+- `content variant`, `voice profile`, `provider adapter`, and `control plane` as canonical terms;
+- `current`, `planned`, or `not implemented` instead of ambiguous roadmap shorthand;
+- current behavior and planned behavior must never be presented as the same thing.
+
+Prefer the shortest wording that preserves the contract. Do not reintroduce retired aliases or terminology from old plans.
+
+## Copyright
+
+New authored Rust, TOML, and YAML files use the canonical aiaiaiai signature and repository-approved SPDX identifier. Generated schemas, JSON fixtures, lockfiles, and third-party material follow [`docs/licensing.md`](docs/licensing.md).
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

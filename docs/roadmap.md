@@ -1,74 +1,62 @@
 # Roadmap
 
-The roadmap is evidence-driven. Repository names describe ownership, but a new
-repository is created only when its public boundary is executable.
+The roadmap is evidence-driven. Repository names describe ownership; implementation must prove the boundary.
 
 ## 0 — execution foundation (`complete`)
 
-One vertical slice in `prism`:
+Prism has a working vertical slice:
 
-- canonical content and localization types;
+- content variants and provider-neutral domain types;
 - capability-driven preflight;
 - explicit dispatch policies and idempotency derivation;
-- provider registry and scriptable fake provider;
+- provider registry and test provider;
 - JSON/NDJSON execution protocol;
 - schema and golden contract tests;
-- CI and architecture contract.
+- Full CI and architecture checks.
 
-This intentionally replaces three mostly structural bootstrap PRs. Empty crates
-would freeze names without proving their boundaries.
+## 1 — Threads provider proof (`current`)
 
-## 1 — provider proof (`current`)
+Text-only Threads publishing is implemented behind injected binding and HTTP boundaries.
 
-The first increment implements text-only Threads publishing behind injected
-binding and HTTP boundaries, including safe error mapping and ambiguous-outcome
-semantics. Next, prove controlled live validation, then add Threads media.
-Instagram may later share private Meta transport/auth helpers while keeping its
-product semantics separate. X remains independent. Required CI uses reduced
-fixtures; live publish checks are explicit and use controlled accounts.
+Next:
 
-## 2 — control plane (`planned`)
+- run controlled live validation;
+- add image, video, and carousel support;
+- keep provider-specific behavior inside the adapter.
 
-Implement the existing `prism-hub` repository after the execution protocol and
-one real provider are proven. The recommended starting point remains a
-conventional Ruby/Rails API with PostgreSQL and database-backed jobs, structured
-as Clean Architecture with SOLID object boundaries. The hub owns accounts,
-OAuth lifecycle, scheduling, persistence policy, approvals, and OpenAPI — never
-provider HTTP semantics.
+Instagram may later share private Meta transport/auth helpers while keeping a separate provider adapter. X and other providers remain independent.
+
+## 2 — control plane (`next`)
+
+`prism-hub` owns accounts, workspaces, OAuth lifecycle, scheduling, persistence, approvals, jobs, audit history, and the client-facing API. It invokes Prism through a versioned boundary and never owns provider HTTP behavior.
+
+Implementation state for the hub is tracked in its own repository.
 
 ## 3 — explicit intelligence (`planned`)
 
-Implement `prism-ai` as an optional variant producer behind a hub-owned port.
-AI output becomes explicit `ContentVariant` values with provenance and cannot
-bypass permissions, approval, preflight, or deterministic dispatch.
+`prism-ai` is an optional content-variant producer behind a hub-owned port. Generated output becomes explicit `ContentVariant` values with provenance before normal approval, preflight, and delivery.
 
-## 4 — clients and autonomy (`planned`)
+## 4 — clients and deployment profiles (`planned`)
 
-Implement modular Telegram surfaces in `prism-bot` and the web administration
-experience in `prism-panel`, both against generated hub contracts. Future
-WhatsApp, Viber, and other messaging integrations belong in isolated
-`prism-bot` adapters. Prove equivalent self-hosted, aiaiaiai-managed, and
-dedicated-instance profiles using immutable artifacts.
+- `prism-bot` provides Telegram and future messaging clients against the hub API;
+- `prism-panel` provides the planned web administration client;
+- self-hosted, aiaiaiai-managed, and isolated deployments use the same versioned artifacts.
 
 ## 5 — reporting and peer integrations (`planned`)
 
-Add optional archive/metrics modules and HQBase mail notifications through the
-public HQBase API. Client-domain modules remain outside Prism core.
+Add optional archive, metrics, and reporting modules. HQBase mail integration uses the public HQBase API through a hub adapter. Client-domain concepts stay outside Prism core.
 
 ## Deferred decisions
 
-- optional developer CLI, when a concrete non-browser workflow justifies it;
+- developer CLI, when a concrete workflow justifies it;
 - canonical aiaiaiai infrastructure repository;
 - exact `prism-hub` license;
 - unattended HQBase service authorization;
-- crates.io names and publication policy;
-- daemon transport, justified by measurement rather than assumed early.
+- crates.io publication names and policy;
+- daemon transport, only if measurements justify it.
 
-Native panel applications, including `prism-panel-ios`, are outside this
-roadmap. They require a separate product and architecture decision before any
-supporting abstraction is added.
+Native panel applications, including `prism-panel-ios`, are outside this roadmap and require a separate product and architecture decision.
 
-Detailed implementation state and exit criteria live in
-[`status.md`](status.md).
+See [`status.md`](status.md) for Prism's exact implemented/planned boundary.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->

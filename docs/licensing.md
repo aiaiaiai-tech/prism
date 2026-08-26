@@ -1,63 +1,46 @@
 # Copyright and licensing
 
-Prism follows the aiaiaiai organization copyright policy while retaining its
-repository-specific Apache-2.0 license.
+Prism follows the aiaiaiai organization copyright policy and keeps its repository-specific Apache-2.0 license.
 
 ## Identity
 
 - public copyright owner: `aiaiaiai`;
 - canonical origin: `aiaiaiai.org`;
 - canonical signature: `© 2026 aiaiaiai · aiaiaiai.org`;
-- GitHub organization `aiaiaiai-org` is a repository location, not the
-  copyright owner;
-- no registered legal entity is claimed by this repository.
+- `aiaiaiai-org` is the GitHub repository location, not the copyright owner;
+- this repository does not claim a registered legal entity.
 
-The first year remains the year of initial copyrightable authorship. A later
-year extends the range only when a file receives material copyrightable
-changes. Mechanical formatting, lockfile regeneration, and automated dependency
-updates do not extend it by themselves.
+The first year stays the year of initial copyrightable authorship. Extend the year range only for later material authorship, not formatting, lockfile regeneration, or automated dependency updates.
 
-## Current repository license
+## Repository license
 
-The repository-selected license is Apache-2.0. Authored Rust, TOML, and YAML
-files use the canonical signature followed by:
+The repository license is Apache-2.0. Authored Rust, TOML, and YAML files use the canonical signature followed by:
 
 ```text
 SPDX-License-Identifier: Apache-2.0
 ```
 
-`LICENSE` contains the complete license text. `NOTICE` contains the repository
-identity and concise distribution notice. Copyright and licensing remain
-separate: the signature identifies authorship; the SPDX expression identifies
-the granted license.
+`LICENSE` contains the full license text. `NOTICE` contains the repository identity and distribution notice. Copyright identifies authorship; SPDX identifies the granted license.
 
 ## File treatment
 
 | Material | Treatment |
 | --- | --- |
-| Authored Rust, TOML, and YAML | Copyright and SPDX header at the top |
+| Authored Rust, TOML, and YAML | Copyright + SPDX header at the top |
 | Authored Markdown | Non-rendering canonical footer |
-| Generated JSON Schema | No injected comment; generator output remains deterministic |
-| JSON fixtures | No comments because standard JSON does not support them |
+| Generated JSON Schema | No injected comment |
+| JSON fixtures | No comments |
 | Lockfiles and build artifacts | No manually maintained header |
 | Vendored or derived third-party material | Preserve upstream notices and attribution |
 
-`cargo run -p xtask -- check` validates generated contracts and the current
-repository copyright policy. `cargo run -p xtask -- check-copyright` runs only
-the copyright/license portion.
+`cargo run -p xtask -- check` validates generated contracts and repository copyright rules. `cargo run -p xtask -- check-copyright` runs only the copyright/license checks.
 
-## Future license decisions
+## Future license changes
 
-No dual, multi, proprietary, or commercial license is established by this
-document. Such a change requires an explicit repository-level decision and
-must not silently replace Apache-2.0.
+This document does not establish dual, multi, proprietary, or commercial licensing. Any such change requires an explicit repository decision and must not silently replace Apache-2.0.
 
-If a future decision introduces compound licensing, source headers will use the
-exact approved SPDX expression, including `OR`, `AND`, `WITH`, or a defined
-`LicenseRef-*` where applicable. Per-file overrides and third-party notices take
-precedence for the files they govern.
+If compound licensing is approved later, source headers must use the exact approved SPDX expression. Per-file overrides and required third-party notices take precedence.
 
-Policy precedence is applicable law, then repository-specific LICENSE/NOTICE
-rules, then the aiaiaiai organization default.
+Policy precedence is applicable law, repository-specific LICENSE/NOTICE rules, then the aiaiaiai organization default.
 
 <!-- © 2026 aiaiaiai · aiaiaiai.org -->
