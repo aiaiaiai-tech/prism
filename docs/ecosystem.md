@@ -21,6 +21,10 @@ Prism is one product in a larger family. Repository boundaries are ownership bou
 - Infrastructure consumes versioned artifacts and documented runtime contracts.
 - HQBase integration belongs in a hub adapter using the public HQBase API.
 
+## Human identity notation
+
+Prism does not own human-identifier syntax or allocation. If a Hub or client uses nilx.one-style `0x` public identity notation, its canonical meaning is defined by [`0x1` Identity — `0x` notation](https://github.com/nilx-one/0x1/blob/master/documents/04-identity.md#0x-notation). Prism must not hard-code a concrete identity such as `0x0sky` or reinterpret the `0x` prefix locally.
+
 ## Forbidden coupling
 
 - Prism importing hub, client, ai, HQBase, or infrastructure internals;
